@@ -6,57 +6,128 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>vaanuva.com | Spaceships</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: url('images/spaceship.png') center/cover no-repeat fixed; font-family: 'Courier New', monospace; }
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            min-height: 100vh;
+            background: #0a0e27 url('images/spaceship.png') center/cover no-repeat fixed; 
+            font-family: 'Courier New', monospace; 
+            color: white;
+            overflow-x: hidden;
+        }
         
-        #canvas-bg { display: none; }
+        /* Dark overlay to ensure text readability on any background */
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); z-index: 0;
+        }
         
-        #content { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding-top: 3rem; padding-bottom: 3rem; }
+        #content { 
+            position: relative; z-index: 10; width: 100%; min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center; 
+            padding: 1rem; box-sizing: border-box;
+        }
         
-        .header { color: white; text-align: center; margin-bottom: 2rem; position: relative; }
-        .header h1 { font-size: 2.5rem; letter-spacing: 5px; margin: 0; color: #00ffff; text-shadow: 0 0 10px #00ffff; }
-        .header p { font-size: 2rem; color: #b9c5cf; margin: 0.5rem 0 0 0; }
+        .header { text-align: center; margin-top: 4rem; margin-bottom: 2rem; }
+        .header h1 { 
+            font-size: clamp(1.8rem, 5vw, 3rem); 
+            letter-spacing: 5px; margin: 0; color: #00ffff; 
+            text-shadow: 0 0 10px #00ffff; 
+        }
+        .header p { font-size: clamp(1rem, 3vw, 1.5rem); color: #b9c5cf; margin: 0.5rem 0; }
         
-        .back-to-menu { position: absolute; top: 20px; left: 20px; background: #00ffff; color: #0a0e27; border: none; padding: 0.75rem 1.5rem; border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; z-index: 5; }
+        .back-to-menu { 
+            position: absolute; top: 20px; left: 20px; 
+            background: #00ffff; color: #0a0e27; border: none; 
+            padding: 0.6rem 1.2rem; border-radius: 25px; cursor: pointer; 
+            font-weight: bold; transition: all 0.3s ease; z-index: 20; 
+        }
         .back-to-menu:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(0, 255, 255, 0.8); }
         
-        .characters-container { display: flex; justify-content: center; align-items: center; gap: 3rem; flex-wrap: wrap; flex: 1; }
+        .characters-container { 
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 2rem; width: 100%; max-width: 1200px;
+            padding: 20px; box-sizing: border-box;
+            justify-items: center;
+        }
         
-        .character { position: relative; cursor: pointer; text-align: center; transition: all 0.3s ease; }
-        .character-sprite { width: 180px; height: 180px; margin: 0 auto 0.5rem; background-size: cover; background-repeat: no-repeat; background-position: center; filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.3)); transition: all 0.3s ease; border-radius: 10px; }
-        .character:hover .character-sprite { filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.8)); transform: scale(1.1); }
-        .character-name { color: white; font-size: 0.9rem; opacity: 0; transition: opacity 0.3s ease; }
-        .character:hover .character-name { opacity: 1; }
+        .character { 
+            position: relative; cursor: pointer; text-align: center; 
+            transition: all 0.3s ease; width: 100%; 
+        }
+        .character-sprite { 
+            width: clamp(100px, 20vw, 160px); 
+            height: clamp(100px, 20vw, 160px); 
+            margin-bottom: 0.5rem; object-fit: contain;
+            filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.3)); 
+            transition: all 0.3s ease; border-radius: 10px; 
+        }
+        .character:hover .character-sprite { 
+            filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.8)); 
+            transform: scale(1.1); 
+        }
+        .character-name { 
+            color: white; font-size: 0.8rem; font-weight: bold;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
         
-        .character.selected .character-sprite { animation: floatForward 0.8s ease-out; }
-        
-        @keyframes floatForward { 0% { transform: translateY(0); } 50% { transform: translateY(-30px); } 100% { transform: translateY(-60px) scale(1.15); } }
-        
-        /* Dialog Box */
-        #dialog-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); opacity: 0; pointer-events: none; z-index: 100; transition: opacity 0.3s ease; }
+        /* Dialog Box Responsive */
+        #dialog-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.85); opacity: 0; pointer-events: none; 
+            z-index: 100; transition: opacity 0.3s ease; 
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; box-sizing: border-box;
+        }
         #dialog-overlay.active { opacity: 1; pointer-events: auto; }
         
-        #dialog-box { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: #1a1f3a; border: 3px solid #00ffff; padding: 2rem; border-radius: 10px; max-width: 900px; opacity: 0; pointer-events: none; z-index: 101; transition: all 0.4s ease; box-shadow: 0 0 30px rgba(0, 255, 255, 0.5), inset 0 0 20px rgba(0, 255, 255, 0.1); display: flex; gap: 2rem; align-items: flex-start; }
-        #dialog-overlay.active #dialog-box { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+        #dialog-box { 
+            background: #1a1f3a; border: 2px solid #00ffff; 
+            padding: 2rem; border-radius: 15px; 
+            max-width: 800px; width: 100%;
+            max-height: 90vh; overflow-y: auto;
+            transform: scale(0.8); transition: all 0.4s ease; 
+            display: flex; gap: 2rem; align-items: center;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+        #dialog-overlay.active #dialog-box { transform: scale(1); }
         
-        #dialog-content { flex: 1; min-width: 0; }
+        #char-preview { 
+            width: 150px; height: 150px; border: 2px solid #00ffff; 
+            border-radius: 10px; object-fit: contain; flex-shrink: 0;
+            background: rgba(0,0,0,0.3);
+        }
         
-        #char-preview { width: 180px; height: 220px; border: 2px solid #00ffff; border-radius: 10px; object-fit: cover; flex-shrink: 0; filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5)); }
+        #dialog-content { flex: 1; }
+        #dialog-box h2 { color: #00ffff; margin: 0 0 0.5rem 0; font-size: 1.4rem; }
+        .role { color: #a29bfe; font-size: 0.9rem; margin-bottom: 1rem; display: block; }
+        .backstory { font-size: 0.95rem; line-height: 1.6; color: #ddd; margin-bottom: 1.5rem; }
         
-        #dialog-box h2 { color: #00ffff; margin: 0 0 1rem 0; font-size: 1.5rem; letter-spacing: 2px; }
-        #dialog-box .role { color: #a29bfe; font-size: 0.9rem; margin-bottom: 1rem; font-style: italic; }
-        #dialog-box .backstory { color: #ddd; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; min-height: 80px; }
-        
-        .close-btn { background: #00ffff; color: #0a0e27; border: none; padding: 0.75rem 1.5rem; border-radius: 5px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; }
-        .close-btn:hover { background: #00cccc; box-shadow: 0 0 15px rgba(0, 255, 255, 0.6); }
-        
-        .back-btn { color: #a29bfe; background: none; border: 1px solid #a29bfe; padding: 0.75rem 1.5rem; border-radius: 5px; cursor: pointer; margin-top: 1rem; transition: all 0.3s ease; }
-        .back-btn:hover { color: #00ffff; border-color: #00ffff; }
+        .close-btn { 
+            background: #00ffff; color: #0a0e27; border: none; 
+            padding: 0.8rem 1.5rem; border-radius: 5px; cursor: pointer; 
+            font-weight: bold; width: 100%;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 650px) {
+            #dialog-box { flex-direction: column; text-align: center; padding: 1.5rem; }
+            #char-preview { width: 120px; height: 120px; }
+            .back-to-menu { padding: 0.5rem 1rem; font-size: 0.8rem; }
+        }
+
+        /* Selection Animation */
+        .character.selected .character-sprite {
+            animation: pulseGlow 0.8s infinite alternate;
+        }
+        @keyframes pulseGlow {
+            from { filter: drop-shadow(0 0 5px #00ffff); transform: scale(1.1); }
+            to { filter: drop-shadow(0 0 20px #00ffff); transform: scale(1.15); }
+        }
     </style>
 </head>
 <body>
 
-    <canvas id="canvas-bg"></canvas>
-    
     <div id="content">
         <button class="back-to-menu" onclick="goBackToMenu()">← BACK</button>
         
@@ -68,14 +139,14 @@
         <div class="characters-container" id="characters-container"></div>
     </div>
 
-    <div id="dialog-overlay">
+    <div id="dialog-overlay" onclick="if(event.target==this) closeDialog()">
         <div id="dialog-box">
             <img id="char-preview" src="" alt="Character">
             <div id="dialog-content">
                 <h2 id="char-name"></h2>
-                <div class="role" id="char-role"></div>
+                <span class="role" id="char-role"></span>
                 <div class="backstory" id="char-backstory"></div>
-                <button class="close-btn" onclick="closeDialog()">[ CLOSE ]</button>
+                <button class="close-btn" onclick="closeDialog()">CLOSE TERMINAL</button>
             </div>
         </div>
     </div>
@@ -97,7 +168,8 @@
                 const charEl = document.createElement('div');
                 charEl.className = 'character';
                 charEl.innerHTML = `
-                    <img src="images/charc${char.id}.png" alt="${char.name}" class="character-sprite">
+                    <img src="images/charc${char.id}.png" alt="${char.name}" class="character-sprite" 
+                         onerror="this.src='https://via.placeholder.com/150/00ffff/000000?text=${char.role}'">
                     <div class="character-name">${char.name}</div>
                 `;
                 charEl.addEventListener('click', () => selectCharacter(char, charEl));
@@ -108,38 +180,44 @@
         function selectCharacter(char, element) {
             document.querySelectorAll('.character').forEach(c => c.classList.remove('selected'));
             element.classList.add('selected');
-            setTimeout(() => showDialog(char), 400);
+            showDialog(char);
         }
 
         function showDialog(char) {
             document.getElementById('char-preview').src = `images/charc${char.id}.png`;
             document.getElementById('char-name').textContent = char.name;
             document.getElementById('char-role').textContent = `[ ${char.role} ]`;
+            
+            const overlay = document.getElementById('dialog-overlay');
+            overlay.classList.add('active');
             typeText(char.backstory);
-            document.getElementById('dialog-overlay').classList.add('active');
         }
 
+        let typeInterval;
         function typeText(text) {
             const element = document.getElementById('char-backstory');
             element.textContent = '';
+            clearInterval(typeInterval);
             let index = 0;
-            const interval = setInterval(() => {
+            typeInterval = setInterval(() => {
                 if (index < text.length) {
                     element.textContent += text[index];
                     index++;
                 } else {
-                    clearInterval(interval);
+                    clearInterval(typeInterval);
                 }
-            }, 30);
+            }, 25);
         }
 
         function closeDialog() {
             document.getElementById('dialog-overlay').classList.remove('active');
             document.querySelectorAll('.character').forEach(c => c.classList.remove('selected'));
+            clearInterval(typeInterval);
         }
 
         function goBackToMenu() {
-            window.location.href = 'back.html';
+            // Using your requested logic
+            window.location.href = 'index.html'; 
         }
 
         initCharacters();
