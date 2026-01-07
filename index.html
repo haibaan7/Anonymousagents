@@ -15,54 +15,110 @@
             top: 0; left: 0; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
             z-index: 10; transition: opacity 1s ease, transform 1.5s ease;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .glass-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 3rem; border-radius: 20px; text-align: center; color: white;
+            padding: clamp(1.5rem, 5vw, 3rem); 
+            border-radius: 20px; 
+            text-align: center; 
+            color: white;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            /* Fluid font size: Min 1.5rem, Scales with width, Max 3rem */
+            font-size: clamp(1.5rem, 6vw, 3rem);
+            margin-bottom: 1.5rem;
         }
 
         .cta-button {
-            display: inline-block; padding: 15px 40px; background: white;
-            color: black; text-decoration: none; border-radius: 50px;
-            font-weight: bold; cursor: pointer; transition: 0.3s;
+            display: inline-block; 
+            padding: 15px 30px; 
+            background: white;
+            color: black; 
+            text-decoration: none; 
+            border-radius: 50px;
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.3s;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
         }
 
-        .cta-button:hover { transform: scale(1.1); box-shadow: 0 0 20px #fff; }
+        .cta-button:hover { transform: scale(1.05); box-shadow: 0 0 20px #fff; }
 
-        /* Final Welcome Text (Hidden initially) */
+        /* Final Welcome Text */
         #adventure-text {
-            position: absolute; top: 50%; left: 50%;
+            position: absolute; 
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            color: white; text-align: center; opacity: 0;
-            pointer-events: none; z-index: 5;
+            color: white; 
+            text-align: center; 
+            opacity: 0;
+            pointer-events: none; 
+            z-index: 5;
             transition: opacity 2s ease;
-            display: flex; flex-direction: column; align-items: center; gap: 3rem;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: clamp(1.5rem, 5vw, 3rem);
+            width: 90%;
         }
 
-        /* Navigation Tabs */
+        .adventure-title {
+            font-size: clamp(2rem, 8vw, 4rem); 
+            letter-spacing: clamp(2px, 2vw, 10px);
+            margin: 0;
+        }
+
+        .adventure-sub {
+            font-size: clamp(1rem, 3vw, 1.5rem); 
+            color: #a29bfe;
+            margin: 0;
+        }
+
+        /* Navigation Tabs - Responsive Grid/Flex */
         .nav-tabs {
-            display: flex; gap: 2rem; opacity: 1;
-            pointer-events: auto; z-index: 5;
+            display: flex; 
+            gap: 1rem; 
+            opacity: 1;
+            pointer-events: auto; 
+            z-index: 5;
+            flex-wrap: wrap; /* Allows wrapping on small screens */
+            justify-content: center;
         }
 
         .nav-tab {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white; padding: 1rem 2rem; border-radius: 50px;
-            cursor: pointer; transition: all 0.3s ease;
-            font-size: 1rem; font-weight: 500;
-            pointer-events: auto;
+            color: white; 
+            padding: clamp(0.6rem, 2vw, 1rem) clamp(1rem, 3vw, 2rem); 
+            border-radius: 50px;
+            cursor: pointer; 
+            transition: all 0.3s ease;
+            font-size: clamp(0.8rem, 2vw, 1rem); 
+            font-weight: 500;
+            white-space: nowrap;
         }
 
-        .nav-tab:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.4);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(162, 155, 254, 0.5);
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .nav-tabs {
+                flex-direction: column; /* Stack buttons on very small screens */
+                width: 100%;
+                max-width: 250px;
+            }
+            .nav-tab {
+                width: 100%;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -70,14 +126,14 @@
 
     <div id="ui-layer">
         <div class="glass-card">
-            <h1>Welcome to Anoymous Agents</h1>
-            <div class="cta-button" onclick="startWarp()">Click here to explore Anoymous Agents</div>
+            <h1>Welcome to Anonymous Agents</h1>
+            <div class="cta-button" onclick="startWarp()">Explore Anonymous Agents</div>
         </div>
     </div>
 
     <div id="adventure-text">
-        <h1 style="font-size: 4rem; letter-spacing: 10px;">ADVENTURE SPACE</h1>
-        <p style="font-size: 1.5rem; color: #a29bfe;">Unlimited Possibilities Await</p>
+        <h1 class="adventure-title">ADVENTURE SPACE</h1>
+        <p class="adventure-sub">Unlimited Possibilities Await</p>
         
         <div class="nav-tabs">
             <div class="nav-tab" onclick="navigateTo('spaceship.html')">🚀 Spaceships</div>
@@ -101,10 +157,10 @@
             camera.rotation.x = Math.PI/2;
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setPixelRatio(window.devicePixelRatio); // High DPI support
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            // Create Starfield
             starGeo = new THREE.BufferGeometry();
             let positions = [];
             for(let i=0; i<6000; i++) {
@@ -165,15 +221,17 @@
             scene.add(nebulaParticles);
 
             setTimeout(() => {
-                document.getElementById('adventure-text').style.opacity = '1';
-                document.getElementById('adventure-text').style.pointerEvents = 'auto';
+                const advText = document.getElementById('adventure-text');
+                advText.style.opacity = '1';
+                advText.style.pointerEvents = 'auto';
                 isWarping = false;
                 speed = 0.2;
             }, 100);
         }
 
         function navigateTo(page) {
-            window.location.href = page;
+            console.log("Navigating to:", page);
+            // window.location.href = page; 
         }
 
         function animate() {
@@ -202,12 +260,17 @@
             requestAnimationFrame(animate);
         }
 
+        // IMPROVED RESIZE LOGIC
         window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            camera.aspect = width / height;
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(window.devicePixelRatio);
         });
     </script>
 </body>
 </html>
-
