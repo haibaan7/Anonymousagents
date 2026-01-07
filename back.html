@@ -14,56 +14,98 @@
             top: 0; left: 0; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
             z-index: 10; flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
         }
 
         .hub-title {
-            color: white; text-align: center; margin-bottom: 3rem;
-            font-size: 3.5rem; letter-spacing: 8px;
-            color: #00ffff; text-shadow: 0 0 30px #00ffff;
+            color: #00ffff; 
+            margin-bottom: 1rem;
+            /* Fluid font size: min 2rem, scales with width, max 4rem */
+            font-size: clamp(2rem, 8vw, 4rem); 
+            letter-spacing: clamp(4px, 1.5vw, 10px);
+            text-shadow: 0 0 30px #00ffff;
+            text-transform: uppercase;
         }
 
         .hub-subtitle {
-            color: #a29bfe; font-size: 1.3rem; margin-bottom: 3rem;
+            color: #a29bfe; 
+            font-size: clamp(0.9rem, 3vw, 1.3rem); 
+            margin-bottom: clamp(2rem, 5vw, 4rem);
             letter-spacing: 2px;
+            font-weight: 300;
         }
 
         .hub-nav-tabs {
-            display: flex; gap: 2rem; opacity: 1;
-            pointer-events: auto; z-index: 5; flex-wrap: wrap;
+            display: flex; 
+            gap: clamp(1rem, 3vw, 2rem); 
+            flex-wrap: wrap;
             justify-content: center;
+            width: 100%;
+            max-width: 1000px;
         }
 
         .hub-nav-tab {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(0, 255, 255, 0.5);
-            color: white; padding: 1.5rem 2.5rem; border-radius: 50px;
-            cursor: pointer; transition: all 0.3s ease;
-            font-size: 1.1rem; font-weight: 600;
-            pointer-events: auto; letter-spacing: 2px;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            color: white; 
+            padding: clamp(1rem, 3vw, 1.5rem) clamp(1.5rem, 5vw, 2.5rem); 
+            border-radius: 50px;
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: clamp(0.8rem, 2.5vw, 1.1rem); 
+            font-weight: 600;
+            letter-spacing: 2px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+            white-space: nowrap;
         }
 
         .hub-nav-tab:hover {
             background: rgba(0, 255, 255, 0.2);
             border-color: #00ffff;
-            transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
         }
 
         .home-btn {
-            position: absolute; bottom: 30px; left: 50%;
+            position: absolute; 
+            bottom: clamp(20px, 5vh, 40px); 
+            left: 50%;
             transform: translateX(-50%);
             background: linear-gradient(135deg, #00ffff, #0099cc);
-            color: #0a0e27; border: none; padding: 0.75rem 2rem;
-            border-radius: 25px; cursor: pointer; font-weight: bold;
-            transition: all 0.3s ease; letter-spacing: 1px;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+            color: #0a0e27; 
+            border: none; 
+            padding: 0.75rem 2rem;
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-weight: bold;
+            transition: all 0.3s ease; 
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
 
         .home-btn:hover {
             transform: translateX(-50%) scale(1.1);
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
+        }
+
+        /* Responsive adjustments for narrow screens */
+        @media (max-width: 600px) {
+            .hub-nav-tabs {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+            .hub-nav-tab {
+                width: 80%;
+                max-width: 300px;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -79,8 +121,7 @@
             <div class="hub-nav-tab" onclick="navigateTo('games.html')">🎮 GAMES</div>
         </div>
 
-        <button class="home-btn" onclick="goHome()">← BACK TO VOID
-        </button>
+        <button class="home-btn" onclick="goHome()">← BACK TO VOID</button>
     </div>
 
     <script>
@@ -95,9 +136,11 @@
             camera.rotation.x = Math.PI/2;
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setPixelRatio(window.devicePixelRatio); // Better sharpness on mobile
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
+            // Stars Logic
             starGeo = new THREE.BufferGeometry();
             let positions = [];
             for(let i=0; i<6000; i++) {
@@ -116,7 +159,7 @@
             stars = new THREE.Points(starGeo, starMaterial);
             scene.add(stars);
 
-            // Create Nebula
+            // Nebula Logic
             let nebulaGeo = new THREE.BufferGeometry();
             let nebPositions = [];
             let nebColors = [];
@@ -136,7 +179,7 @@
                 size: 2,
                 vertexColors: true,
                 transparent: true,
-                opacity: 0.8
+                opacity: 0.6
             });
             nebulaParticles = new THREE.Points(nebulaGeo, nebMat);
             scene.add(nebulaParticles);
@@ -157,10 +200,10 @@
             }
             
             starGeo.attributes.position.needsUpdate = true;
-            stars.rotation.y += 0.002;
+            stars.rotation.y += 0.0015;
 
             if (nebulaParticles) {
-                nebulaParticles.rotation.y += 0.001;
+                nebulaParticles.rotation.y += 0.0008;
             }
 
             renderer.render(scene, camera);
@@ -175,14 +218,19 @@
             window.location.href = 'index.html';
         }
 
-        init();
-
+        // IMPROVED RESIZE HANDLER
         window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            camera.aspect = width / height;
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(window.devicePixelRatio);
         });
+
+        init();
     </script>
 </body>
 </html>
-
