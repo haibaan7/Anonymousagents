@@ -14,7 +14,7 @@
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
-            z-index: 10; transition: opacity 1s ease, transform 1.5s ease;
+            z-index: 50; transition: opacity 1s ease, transform 1.5s ease;
             padding: 20px;
             box-sizing: border-box;
         }
@@ -33,7 +33,6 @@
         }
 
         h1 {
-            /* Fluid font size: Min 1.5rem, Scales with width, Max 3rem */
             font-size: clamp(1.5rem, 6vw, 3rem);
             margin-bottom: 1.5rem;
         }
@@ -53,7 +52,7 @@
 
         .cta-button:hover { transform: scale(1.05); box-shadow: 0 0 20px #fff; }
 
-        /* Final Welcome Text */
+        /* Final Welcome Text - FIXED Z-INDEX AND POINTER EVENTS */
         #adventure-text {
             position: absolute; 
             top: 50%; left: 50%;
@@ -61,8 +60,8 @@
             color: white; 
             text-align: center; 
             opacity: 0;
-            pointer-events: none; 
-            z-index: 5;
+            pointer-events: none; /* Block clicks until warp is done */
+            z-index: 100; /* Ensure this is above EVERYTHING */
             transition: opacity 2s ease;
             display: flex; 
             flex-direction: column; 
@@ -83,14 +82,10 @@
             margin: 0;
         }
 
-        /* Navigation Tabs - Responsive Grid/Flex */
         .nav-tabs {
             display: flex; 
             gap: 1rem; 
-            opacity: 1;
-            pointer-events: auto; 
-            z-index: 5;
-            flex-wrap: wrap; /* Allows wrapping on small screens */
+            flex-wrap: wrap;
             justify-content: center;
         }
 
@@ -106,12 +101,18 @@
             font-size: clamp(0.8rem, 2vw, 1rem); 
             font-weight: 500;
             white-space: nowrap;
+            z-index: 101; /* Extra layer of click protection */
         }
 
-        /* Mobile Adjustments */
+        .nav-tab:hover {
+            background: white;
+            color: black;
+            transform: translateY(-5px);
+        }
+
         @media (max-width: 600px) {
             .nav-tabs {
-                flex-direction: column; /* Stack buttons on very small screens */
+                flex-direction: column; 
                 width: 100%;
                 max-width: 250px;
             }
@@ -157,7 +158,7 @@
             camera.rotation.x = Math.PI/2;
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setPixelRatio(window.devicePixelRatio); // High DPI support
+            renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
@@ -184,11 +185,13 @@
 
         function startWarp() {
             isWarping = true;
-            document.getElementById('ui-layer').style.opacity = '0';
-            document.getElementById('ui-layer').style.transform = 'scale(2)';
+            const ui = document.getElementById('ui-layer');
+            ui.style.opacity = '0';
+            ui.style.transform = 'scale(2)';
+            ui.style.pointerEvents = 'none'; // Ensure initial UI doesn't block final UI
             
             setTimeout(() => {
-                document.getElementById('ui-layer').style.display = 'none';
+                ui.style.display = 'none';
                 createAdventureWorld();
             }, 2000);
         }
@@ -220,18 +223,20 @@
             nebulaParticles = new THREE.Points(nebulaGeo, nebMat);
             scene.add(nebulaParticles);
 
+            // GIVING THE UI ACCESS TO CLICKS
             setTimeout(() => {
                 const advText = document.getElementById('adventure-text');
                 advText.style.opacity = '1';
-                advText.style.pointerEvents = 'auto';
+                advText.style.pointerEvents = 'auto'; // CRITICAL: Unlock clicking
                 isWarping = false;
                 speed = 0.2;
             }, 100);
         }
 
         function navigateTo(page) {
-            console.log("Navigating to:", page);
-            // window.location.href = page; 
+            // Test if click is working
+            alert("Entering " + page); 
+            window.location.href = page; 
         }
 
         function animate() {
@@ -260,16 +265,10 @@
             requestAnimationFrame(animate);
         }
 
-        // IMPROVED RESIZE LOGIC
         window.addEventListener('resize', () => {
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-
-            camera.aspect = width / height;
+            camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
-            
-            renderer.setSize(width, height);
-            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
         });
     </script>
 </body>
