@@ -18,73 +18,59 @@
             overflow: hidden; touch-action: none;
         }
 
-        canvas { display: block; }
+        canvas { display: block; z-index: 1; }
 
-        /* General UI */
+        /* HUD */
         #ui {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 10;
         }
+        .hud { padding: 60px 20px 20px; display: flex; justify-content: space-between; font-size: 1rem; }
 
-        .hud { padding: 20px; display: flex; justify-content: space-between; font-size: 1.2rem;
-            position: fixed; top: 40px;
-        }
-
-        /* Go Back Button */
         .back-btn {
-            position: fixed; top: 20px; left: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white; border: 1px solid var(--neon-blue);
+            position: fixed; top: 15px; left: 15px;
+            background: rgba(0, 255, 255, 0.1);
+            color: var(--neon-blue); border: 1px solid var(--neon-blue);
             padding: 8px 15px; border-radius: 5px; cursor: pointer;
             pointer-events: auto; z-index: 200; font-family: inherit;
         }
 
-        /* Boost Meter */
         #boost-wrap {
-            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-            width: 200px; height: 7px; border: 1px solid var(--neon-blue);
-            background: rgba(0,0,0,0.8); border-radius: 10px; overflow: hidden;
+            position: fixed; bottom: 140px; left: 50%; transform: translateX(-50%);
+            width: 180px; height: 6px; border: 1px solid var(--neon-blue);
+            background: #000; border-radius: 10px; overflow: hidden;
         }
-        #boost-fill {
-            width: 100%; height: 100%; background: var(--neon-blue);
-            box-shadow: 0 0 15px var(--neon-blue); transition: width 0.1s linear;
-        }
-        .empty { background: var(--nitro-red) !important; opacity: 0.5; }
+        #boost-fill { width: 100%; height: 100%; background: var(--neon-blue); transition: width 0.1s linear; }
+        .empty { background: var(--nitro-red) !important; }
 
-        /* Mobile Controls - Only visible on touch devices */
+        /* MOBILE CONTROLS FIXED */
         #mobile-controls {
-            position: fixed; bottom: 20px; left: 0; width: 100%;
-            display: none; justify-content: space-around; align-items: center;
-            padding: 0 10px; pointer-events: auto; z-index: 150;
+            position: fixed; bottom: 30px; left: 0; width: 100%;
+            display: flex; justify-content: space-around; align-items: center;
+            pointer-events: none; z-index: 300;
         }
         .ctrl-btn {
-            width: 70px; height: 70px; background: rgba(255, 255, 255, 0.1);
+            width: 80px; height: 80px; background: rgba(255, 255, 255, 0.05);
             border: 2px solid var(--neon-blue); border-radius: 50%;
-            color: var(--neon-blue); font-weight: bold; font-size: 1.2rem;
-            display: flex; center; justify-content: center; align-items: center;
+            color: var(--neon-blue); font-size: 1.5rem;
+            display: flex; justify-content: center; align-items: center;
+            pointer-events: auto; /* CRITICAL */
             user-select: none; -webkit-user-select: none;
         }
-        .ctrl-btn:active { background: var(--neon-blue); color: black; }
-        .boost-btn { border-color: var(--nitro-red); color: var(--nitro-red); width: 80px; height: 80px; }
+        .boost-btn { border-color: var(--nitro-red); color: var(--nitro-red); width: 90px; height: 90px; }
+        
+        /* Only show mobile buttons if it's a touch device */
+        @media (pointer: fine) {
+            #mobile-controls { display: none; }
+        }
 
-        /* Screens */
         .screen {
             position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9);
             display: flex; flex-direction: column; justify-content: center;
-            align-items: center; z-index: 100; text-align: center; padding: 20px;
+            align-items: center; z-index: 400; text-align: center;
         }
-
         .hidden { display: none !important; }
-        .btn {
-            background: var(--neon-blue); color: black; border: none;
-            padding: 1rem 2rem; font-weight: bold; cursor: pointer;
-            margin-top: 20px; font-family: 'Courier New';
-        }
-
-        @media (pointer: coarse) {
-            #mobile-controls { display: flex; }
-            .hud { font-size: 0.9rem; padding-top: 60px; }
-        }
+        .btn { background: var(--neon-blue); color: black; border: none; padding: 1rem 2rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -93,21 +79,20 @@
 
     <div id="ui">
         <div class="hud">
-            <div>DATA: <span id="score">0 </span></div>
+            <div>DATA: <span id="score">0</span></div>
             <div>BEST: <span id="hi-score">0</span></div>
         </div>
         <div id="boost-wrap"><div id="boost-fill"></div></div>
     </div>
 
     <div id="mobile-controls">
-        <div class="ctrl-btn" id="left-btn">L</div>
+        <div class="ctrl-btn" id="left-btn">◀</div>
         <div class="ctrl-btn boost-btn" id="boost-btn">WARP</div>
-        <div class="ctrl-btn" id="right-btn">R</div>
+        <div class="ctrl-btn" id="right-btn">▶</div>
     </div>
 
     <div id="start-screen" class="screen">
-        <h1 style="color: var(--neon-blue); letter-spacing: 5px;">WARP DODGER</h1>
-        <p>Avoid obstacles. Engage Warp Drive to survive.</p>
+        <h1 style="color: var(--neon-blue);">WARP DODGER</h1>
         <button class="btn" onclick="startGame()">INITIATE</button>
     </div>
 
@@ -135,79 +120,43 @@
         let isRecharging = false;
         let keys = {};
 
-        // Mobile State
-        let mobileLeft = false;
-        let mobileRight = false;
-        let mobileBoost = false;
+        // Mobile Control States
+        let mvLeft = false;
+        let mvRight = false;
+        let mvBoost = false;
 
         function init() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             player.x = canvas.width / 2;
-            player.y = canvas.height - (window.matchMedia("(pointer: coarse)").matches ? 180 : 120);
+            player.y = canvas.height - 220; // Moved higher for thumb clearance
             document.getElementById('hi-score').textContent = hiScore;
 
             stars = [];
-            for(let i=0; i<100; i++) {
-                stars.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 2,
-                    speed: Math.random() * 2 + 1
-                });
+            for(let i=0; i<80; i++) {
+                stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*2, speed: Math.random()*2 + 1 });
             }
         }
 
-        // Input Listeners
         window.addEventListener('resize', init);
         window.addEventListener('keydown', e => keys[e.code] = true);
         window.addEventListener('keyup', e => keys[e.code] = false);
 
-        // Mobile Button Logic
-        const setupMobileBtn = (id, pressVar) => {
-            const btn = document.getElementById(id);
-            btn.addEventListener('touchstart', (e) => { e.preventDefault(); window[pressVar] = true; });
-            btn.addEventListener('touchend', (e) => { e.preventDefault(); window[pressVar] = false; });
+        // REWRITTEN MOBILE INPUTS
+        const bind = (id, startFunc, endFunc) => {
+            const el = document.getElementById(id);
+            el.addEventListener('touchstart', e => { e.preventDefault(); startFunc(); }, {passive: false});
+            el.addEventListener('touchend', e => { e.preventDefault(); endFunc(); }, {passive: false});
         };
 
-        setupMobileBtn('left-btn', 'mobileLeft');
-        setupMobileBtn('right-btn', 'mobileRight');
-        setupMobileBtn('boost-btn', 'mobileBoost');
+        bind('left-btn', () => mvLeft = true, () => mvLeft = false);
+        bind('right-btn', () => mvRight = true, () => mvRight = false);
+        bind('boost-btn', () => mvBoost = true, () => mvBoost = false);
 
         function startGame() {
             document.getElementById('start-screen').classList.add('hidden');
             gameActive = true;
             loop();
-        }
-
-        function drawShip() {
-            ctx.save();
-            ctx.translate(player.x, player.y);
-            const color = player.boosting ? "#ff3366" : "#00ffff";
-            ctx.shadowBlur = player.boosting ? 20 : 10;
-            ctx.shadowColor = color;
-
-            ctx.fillStyle = "#444";
-            ctx.beginPath();
-            ctx.moveTo(-20, 12); ctx.lineTo(0, -8); ctx.lineTo(20, 12);
-            ctx.fill();
-
-            ctx.fillStyle = "white";
-            ctx.beginPath();
-            ctx.moveTo(0, -20); ctx.lineTo(-10, 12); ctx.lineTo(10, 12);
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.fillStyle = color;
-            ctx.fillRect(-2, -4, 4, 8);
-
-            if (player.boosting) {
-                ctx.fillStyle = "#ff3366";
-                ctx.beginPath();
-                ctx.moveTo(-6, 12); ctx.lineTo(0, 35); ctx.lineTo(6, 12);
-                ctx.fill();
-            }
-            ctx.restore();
         }
 
         function loop() {
@@ -216,9 +165,9 @@
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Boost Logic (PC or Mobile)
-            const activatingBoost = keys['Space'] || mobileBoost;
-            if (activatingBoost && boostAmount > 0 && !isRecharging) {
+            // Logic
+            const isTryingBoost = keys['Space'] || mvBoost;
+            if (isTryingBoost && boostAmount > 0 && !isRecharging) {
                 player.boosting = true;
                 boostAmount -= 1.5;
                 if (boostAmount <= 0) {
@@ -235,11 +184,11 @@
             const worldSpeedMult = player.boosting ? 4 : 1;
             const playerSpeed = player.boosting ? 12 : 7;
 
-            // Movement Logic (PC or Mobile)
-            if (keys['ArrowLeft'] || keys['KeyA'] || mobileLeft) player.x -= playerSpeed;
-            if (keys['ArrowRight'] || keys['KeyD'] || mobileRight) player.x += playerSpeed;
+            if (keys['ArrowLeft'] || keys['KeyA'] || mvLeft) player.x -= playerSpeed;
+            if (keys['ArrowRight'] || keys['KeyD'] || mvRight) player.x += playerSpeed;
             player.x = Math.max(15, Math.min(canvas.width - 15, player.x));
 
+            // Stars
             stars.forEach(s => {
                 s.y += s.speed * worldSpeedMult;
                 if (s.y > canvas.height) s.y = 0;
@@ -247,26 +196,17 @@
                 ctx.fillRect(s.x, s.y, s.size, s.size);
             });
 
+            // Enemies
             if (Math.random() < 0.04 + (score / 3000)) {
-                enemies.push({
-                    x: Math.random() * canvas.width,
-                    y: -50,
-                    size: 15 + Math.random() * 20,
-                    speed: (3 + Math.random() * 3) * worldSpeedMult
-                });
+                enemies.push({ x: Math.random() * canvas.width, y: -50, size: 20, speed: (3 + Math.random() * 3) * worldSpeedMult });
             }
 
             enemies.forEach((en, i) => {
                 en.y += en.speed;
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = "magenta";
                 ctx.fillStyle = "magenta";
-                ctx.fillRect(en.x - en.size/2, en.y, en.size, en.size);
-                ctx.shadowBlur = 0;
+                ctx.fillRect(en.x - 10, en.y, 20, 20);
 
-                const dx = player.x - en.x;
-                const dy = player.y - en.y;
-                if (Math.sqrt(dx*dx + dy*dy) < 25) {
+                if (Math.abs(player.x - en.x) < 25 && Math.abs(player.y - en.y) < 25) {
                     gameActive = false;
                     document.getElementById('game-over').classList.remove('hidden');
                     document.getElementById('final-score').textContent = "SCORE: " + score;
@@ -275,7 +215,14 @@
                 if (en.y > canvas.height) { enemies.splice(i, 1); score++; document.getElementById('score').textContent = score; }
             });
 
-            drawShip();
+            // Draw Ship
+            ctx.fillStyle = player.boosting ? "red" : "cyan";
+            ctx.beginPath();
+            ctx.moveTo(player.x, player.y - 20);
+            ctx.lineTo(player.x - 15, player.y + 15);
+            ctx.lineTo(player.x + 15, player.y + 15);
+            ctx.fill();
+
             requestAnimationFrame(loop);
         }
 
