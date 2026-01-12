@@ -47,6 +47,13 @@
             font-weight: bold; cursor: pointer; margin-top: 1.5rem;
             font-family: 'Courier New';
         }
+        .back-btn {
+            position: fixed; top: 15px; left: 15px;
+            background: rgba(0, 255, 255, 0.1);
+            color: var(--neon-blue); border: 1px solid var(--neon-blue);
+            padding: 8px 15px; border-radius: 5px; cursor: pointer;
+            pointer-events: auto; z-index: 200; font-family: inherit;
+        }
 
         /* Game UI */
         .game-container {
@@ -84,6 +91,7 @@
 </head>
 <body>
 
+    <button class="back-btn" onclick="location.href='games.html'">← BACK</button>
     <div id="rules-overlay" class="overlay">
         <div class="modal-box">
             <h1 style="color: var(--neon-blue);">MISSION: BYPASS</h1>
