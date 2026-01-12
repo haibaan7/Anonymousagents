@@ -20,29 +20,58 @@
 
         canvas { display: block; }
 
+        /* General UI */
         #ui {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 10;
         }
 
-        .hud { padding: 20px; display: flex; justify-content: space-between; font-size: 1.2rem; }
+        .hud { padding: 20px; display: flex; justify-content: space-between; font-size: 1.2rem;
+            position: fixed; top: 40px;
+        }
+
+        /* Go Back Button */
+        .back-btn {
+            position: fixed; top: 20px; left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white; border: 1px solid var(--neon-blue);
+            padding: 8px 15px; border-radius: 5px; cursor: pointer;
+            pointer-events: auto; z-index: 200; font-family: inherit;
+        }
 
         /* Boost Meter */
         #boost-wrap {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            width: 250px; height: 12px; border: 2px solid var(--neon-blue);
-            background: rgba(0,0,0,0.8); border-radius: 20px; overflow: hidden;
+            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+            width: 200px; height: 7px; border: 1px solid var(--neon-blue);
+            background: rgba(0,0,0,0.8); border-radius: 10px; overflow: hidden;
         }
         #boost-fill {
             width: 100%; height: 100%; background: var(--neon-blue);
             box-shadow: 0 0 15px var(--neon-blue); transition: width 0.1s linear;
         }
-        .empty { background: var(--nitro-red) !important; box-shadow: 0 0 15px var(--nitro-red) !important; opacity: 0.5; }
+        .empty { background: var(--nitro-red) !important; opacity: 0.5; }
 
+        /* Mobile Controls - Only visible on touch devices */
+        #mobile-controls {
+            position: fixed; bottom: 20px; left: 0; width: 100%;
+            display: none; justify-content: space-around; align-items: center;
+            padding: 0 10px; pointer-events: auto; z-index: 150;
+        }
+        .ctrl-btn {
+            width: 70px; height: 70px; background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--neon-blue); border-radius: 50%;
+            color: var(--neon-blue); font-weight: bold; font-size: 1.2rem;
+            display: flex; center; justify-content: center; align-items: center;
+            user-select: none; -webkit-user-select: none;
+        }
+        .ctrl-btn:active { background: var(--neon-blue); color: black; }
+        .boost-btn { border-color: var(--nitro-red); color: var(--nitro-red); width: 80px; height: 80px; }
+
+        /* Screens */
         .screen {
             position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9);
             display: flex; flex-direction: column; justify-content: center;
-            align-items: center; z-index: 100; text-align: center;
+            align-items: center; z-index: 100; text-align: center; padding: 20px;
         }
 
         .hidden { display: none !important; }
@@ -51,28 +80,41 @@
             padding: 1rem 2rem; font-weight: bold; cursor: pointer;
             margin-top: 20px; font-family: 'Courier New';
         }
+
+        @media (pointer: coarse) {
+            #mobile-controls { display: flex; }
+            .hud { font-size: 0.9rem; padding-top: 60px; }
+        }
     </style>
 </head>
 <body>
 
+    <button class="back-btn" onclick="location.href='games.html'">← BACK</button>
+
     <div id="ui">
         <div class="hud">
-            <div>DATA RECOVERED: <span id="score">0</span></div>
-            <div>HI-SCORE: <span id="hi-score">0</span></div>
+            <div>DATA: <span id="score">0 </span></div>
+            <div>BEST: <span id="hi-score">0</span></div>
         </div>
         <div id="boost-wrap"><div id="boost-fill"></div></div>
     </div>
 
+    <div id="mobile-controls">
+        <div class="ctrl-btn" id="left-btn">L</div>
+        <div class="ctrl-btn boost-btn" id="boost-btn">WARP</div>
+        <div class="ctrl-btn" id="right-btn">R</div>
+    </div>
+
     <div id="start-screen" class="screen">
-        <h1 style="color: var(--neon-blue); letter-spacing: 10px;">WARP DODGER</h1>
-        <p>Hold [SPACE] to engage Warp Drive.</p>
-        <button class="btn" onclick="startGame()">ENGAGE</button>
+        <h1 style="color: var(--neon-blue); letter-spacing: 5px;">WARP DODGER</h1>
+        <p>Avoid obstacles. Engage Warp Drive to survive.</p>
+        <button class="btn" onclick="startGame()">INITIATE</button>
     </div>
 
     <div id="game-over" class="screen hidden">
         <h1 style="color: var(--nitro-red);">CRITICAL FAILURE</h1>
         <h2 id="final-score">SCORE: 0</h2>
-        <button class="btn" onclick="location.reload()">REBOOT SYSTEM</button>
+        <button class="btn" onclick="location.reload()">RETRY</button>
     </div>
 
     <canvas id="gameCanvas"></canvas>
@@ -86,24 +128,27 @@
         let score = 0;
         let hiScore = localStorage.getItem('vaanuva_hi') || 0;
         
-        // Game Objects
-        let player = { x: 0, y: 0, w: 40, h: 50, speed: 8, boosting: false };
+        let player = { x: 0, y: 0, w: 30, h: 40, speed: 8, boosting: false };
         let stars = [];
         let enemies = [];
         let boostAmount = 100;
         let isRecharging = false;
         let keys = {};
 
+        // Mobile State
+        let mobileLeft = false;
+        let mobileRight = false;
+        let mobileBoost = false;
+
         function init() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             player.x = canvas.width / 2;
-            player.y = canvas.height - 120;
+            player.y = canvas.height - (window.matchMedia("(pointer: coarse)").matches ? 180 : 120);
             document.getElementById('hi-score').textContent = hiScore;
 
-            // Initialize Stars
             stars = [];
-            for(let i=0; i<150; i++) {
+            for(let i=0; i<100; i++) {
                 stars.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
@@ -113,9 +158,21 @@
             }
         }
 
+        // Input Listeners
         window.addEventListener('resize', init);
         window.addEventListener('keydown', e => keys[e.code] = true);
         window.addEventListener('keyup', e => keys[e.code] = false);
+
+        // Mobile Button Logic
+        const setupMobileBtn = (id, pressVar) => {
+            const btn = document.getElementById(id);
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); window[pressVar] = true; });
+            btn.addEventListener('touchend', (e) => { e.preventDefault(); window[pressVar] = false; });
+        };
+
+        setupMobileBtn('left-btn', 'mobileLeft');
+        setupMobileBtn('right-btn', 'mobileRight');
+        setupMobileBtn('boost-btn', 'mobileBoost');
 
         function startGame() {
             document.getElementById('start-screen').classList.add('hidden');
@@ -126,77 +183,63 @@
         function drawShip() {
             ctx.save();
             ctx.translate(player.x, player.y);
-            
             const color = player.boosting ? "#ff3366" : "#00ffff";
             ctx.shadowBlur = player.boosting ? 20 : 10;
             ctx.shadowColor = color;
 
-            // Wings
             ctx.fillStyle = "#444";
             ctx.beginPath();
-            ctx.moveTo(-25, 15); ctx.lineTo(0, -10); ctx.lineTo(25, 15);
+            ctx.moveTo(-20, 12); ctx.lineTo(0, -8); ctx.lineTo(20, 12);
             ctx.fill();
 
-            // Main Hull
             ctx.fillStyle = "white";
             ctx.beginPath();
-            ctx.moveTo(0, -25); // Nose
-            ctx.lineTo(-12, 15);
-            ctx.lineTo(12, 15);
+            ctx.moveTo(0, -20); ctx.lineTo(-10, 12); ctx.lineTo(10, 12);
             ctx.closePath();
             ctx.fill();
 
-            // Cockpit
             ctx.fillStyle = color;
-            ctx.fillRect(-3, -5, 6, 10);
+            ctx.fillRect(-2, -4, 4, 8);
 
-            // Engine Fire
             if (player.boosting) {
                 ctx.fillStyle = "#ff3366";
                 ctx.beginPath();
-                ctx.moveTo(-8, 15); ctx.lineTo(0, 40); ctx.lineTo(8, 15);
+                ctx.moveTo(-6, 12); ctx.lineTo(0, 35); ctx.lineTo(6, 12);
                 ctx.fill();
             }
-
             ctx.restore();
         }
 
         function loop() {
             if (!gameActive) return;
 
-            // 1. Clear Canvas
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // 2. Handle Boost Logic
-            if (keys['Space'] && boostAmount > 0 && !isRecharging) {
+            // Boost Logic (PC or Mobile)
+            const activatingBoost = keys['Space'] || mobileBoost;
+            if (activatingBoost && boostAmount > 0 && !isRecharging) {
                 player.boosting = true;
-                boostAmount -= 1.2; // Drain speed
+                boostAmount -= 1.5;
                 if (boostAmount <= 0) {
                     isRecharging = true;
                     boostFill.classList.add('empty');
-                    setTimeout(() => {
-                        isRecharging = false;
-                        boostFill.classList.remove('empty');
-                    }, 10000); // 10s lockout
+                    setTimeout(() => { isRecharging = false; boostFill.classList.remove('empty'); }, 10000);
                 }
             } else {
                 player.boosting = false;
-                if (boostAmount < 100) {
-                    boostAmount += isRecharging ? (100 / 600) : 0.1;
-                }
+                if (boostAmount < 100) boostAmount += isRecharging ? 0.16 : 0.1;
             }
             boostFill.style.width = boostAmount + "%";
 
-            // 3. Movement & World Speed
             const worldSpeedMult = player.boosting ? 4 : 1;
-            const playerSpeed = player.boosting ? 15 : 8;
+            const playerSpeed = player.boosting ? 12 : 7;
 
-            if (keys['ArrowLeft'] || keys['KeyA']) player.x -= playerSpeed;
-            if (keys['ArrowRight'] || keys['KeyD']) player.x += playerSpeed;
-            player.x = Math.max(20, Math.min(canvas.width - 20, player.x));
+            // Movement Logic (PC or Mobile)
+            if (keys['ArrowLeft'] || keys['KeyA'] || mobileLeft) player.x -= playerSpeed;
+            if (keys['ArrowRight'] || keys['KeyD'] || mobileRight) player.x += playerSpeed;
+            player.x = Math.max(15, Math.min(canvas.width - 15, player.x));
 
-            // 4. Update Stars (Parallax)
             stars.forEach(s => {
                 s.y += s.speed * worldSpeedMult;
                 if (s.y > canvas.height) s.y = 0;
@@ -204,42 +247,32 @@
                 ctx.fillRect(s.x, s.y, s.size, s.size);
             });
 
-            // 5. Update Enemies
-            if (Math.random() < 0.05 + (score / 2000)) {
+            if (Math.random() < 0.04 + (score / 3000)) {
                 enemies.push({
                     x: Math.random() * canvas.width,
                     y: -50,
-                    size: 20 + Math.random() * 20,
-                    speed: (3 + Math.random() * 4) * worldSpeedMult
+                    size: 15 + Math.random() * 20,
+                    speed: (3 + Math.random() * 3) * worldSpeedMult
                 });
             }
 
             enemies.forEach((en, i) => {
                 en.y += en.speed;
-                
-                // Draw Alien Glow
                 ctx.shadowBlur = 10;
                 ctx.shadowColor = "magenta";
                 ctx.fillStyle = "magenta";
                 ctx.fillRect(en.x - en.size/2, en.y, en.size, en.size);
                 ctx.shadowBlur = 0;
 
-                // Collision
                 const dx = player.x - en.x;
                 const dy = player.y - en.y;
-                const distance = Math.sqrt(dx*dx + dy*dy);
-                if (distance < 30) {
+                if (Math.sqrt(dx*dx + dy*dy) < 25) {
                     gameActive = false;
                     document.getElementById('game-over').classList.remove('hidden');
                     document.getElementById('final-score').textContent = "SCORE: " + score;
                     if(score > hiScore) localStorage.setItem('vaanuva_hi', score);
                 }
-
-                if (en.y > canvas.height) {
-                    enemies.splice(i, 1);
-                    score++;
-                    document.getElementById('score').textContent = score;
-                }
+                if (en.y > canvas.height) { enemies.splice(i, 1); score++; document.getElementById('score').textContent = score; }
             });
 
             drawShip();
