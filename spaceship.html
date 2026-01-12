@@ -229,11 +229,6 @@
     characters.forEach(char => {
         const charEl = document.createElement('div');
         charEl.className = 'character';
-        
-        // This converts "Captain Nihaal" to "nihaal.png"
-        // It removes spaces and makes it lowercase
-       
-        
         charEl.innerHTML = `
             <img src="images/${imageName}.png" alt="${char.name}" class="character-sprite">
             <div class="character-name">${char.name}</div>
@@ -291,6 +286,7 @@
     </script>
 </body>
 </html>
+
 
 
 
