@@ -5,59 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>vaanuva.com | Spaceships</title>
     <style>
-        /* Modern reset and background fit */
         body, html { 
-    margin: 0; 
-    padding: 0; 
-    width: 100%; 
-    height: 100%; 
-    /* This makes your cockpit image fit any screen size */
-    background: #0a0e27 url('images/testbg.jpg') center center / cover no-repeat fixed;
-    
-    /* This ensures the background itself stays sharp if it's pixel art */
-    image-rendering: pixelated; 
-    
-    font-family: 'Courier New', monospace; 
-    overflow-x: hidden;
-}
+            margin: 0; 
+            padding: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: #0a0e27 url('images/testbg.jpg') center center / cover no-repeat fixed;
+            image-rendering: pixelated; 
+            font-family: 'Courier New', monospace; 
+            overflow: hidden; 
+        }
 
-/* Specific class for your character sprites */
-.pixelated_image {
-    image-rendering: pixelated;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: crisp-edges;
-}
+        .pixelated_image {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
         
         #content { 
             position: relative; 
             z-index: 10; 
-            width: 100%; 
-            min-height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: flex-start; 
-            align-items: center; 
-            padding: 5rem 1rem 3rem 1rem; 
-            box-sizing: border-box;
+            width: 100vw; 
+            height: 100vh; 
         }
         
         .header { 
+            position: absolute;
+            top: 40px;
+            width: 100%;
             color: white; 
             text-align: center; 
-            margin-bottom: 3rem; 
+            pointer-events: none;
         }
+
         .header h1 { 
             font-size: clamp(2rem, 8vw, 3.5rem); 
             letter-spacing: 8px; 
             margin: 0; 
             color: #00ffff; 
             text-shadow: 0 0 20px rgba(0, 255, 255, 0.6); 
-        }
-        .header p { 
-            font-size: 1.2rem; 
-            color: #b9c5cf; 
-            margin: 0.5rem 0 0 0; 
-            letter-spacing: 2px;
         }
         
         .back-to-menu { 
@@ -71,39 +57,39 @@
             border-radius: 25px; 
             cursor: pointer; 
             font-weight: bold; 
-            transition: all 0.3s ease; 
             z-index: 1000; 
+            transition: transform 0.2s;
         }
-        .back-to-menu:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(0, 255, 255, 0.8); }
-        
+        .back-to-menu:hover { transform: scale(1.1); }
+
         .characters-container { 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            gap: 2rem; 
-            flex-wrap: wrap; 
-            max-width: 1200px;
-            margin: 0 auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
         
+        /* INCREASED SIZE HERE */
         .character { 
-            position: relative; 
+            position: absolute; 
             cursor: pointer; 
             text-align: center; 
             transition: all 0.3s ease; 
-            width: 160px;
+            width: 220px; /* Was 140px */
+            transform: translate(-50%, -50%); 
         }
+
         .character-sprite { 
-            width: 140px; 
-            height: 140px; 
-            margin: 0 auto 1rem; 
+            width: 200px; /* Was 120px */
+            height: 200px; /* Was 120px */
             object-fit: contain;
             filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.3)); 
-            transition: all 0.3s ease; 
         }
+
         .character:hover .character-sprite { 
-            filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.8)); 
-            transform: scale(1.1) translateY(-10px); 
+            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.9)); 
+            transform: scale(1.05); 
         }
         
         .character-name { 
@@ -111,87 +97,37 @@
             font-size: 0.9rem; 
             font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            background: rgba(0, 0, 0, 0.6); 
+            padding: 4px 8px;
+            display: inline-block;
+            margin-top: 5px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
         }
         
-        .character.selected .character-sprite { 
-            transform: translateY(-20px) scale(1.1);
-            filter: drop-shadow(0 0 20px #00ffff);
-        }
-        
-        /* Dialog Box Styling */
+        /* Dialog Box */
         #dialog-overlay { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(10, 14, 39, 0.9); 
-            backdrop-filter: blur(8px);
-            opacity: 0; 
-            pointer-events: none; 
-            z-index: 2000; 
-            transition: opacity 0.3s ease; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(10, 14, 39, 0.9); backdrop-filter: blur(8px);
+            opacity: 0; pointer-events: none; z-index: 2000; display: flex;
+            justify-content: center; align-items: center; transition: opacity 0.3s ease;
         }
         #dialog-overlay.active { opacity: 1; pointer-events: auto; }
-        
-        #dialog-box { 
-            background: #1a1f3a; 
-            border: 2px solid #00ffff; 
-            padding: 2.5rem; 
-            border-radius: 15px; 
-            max-width: 800px; 
-            width: 90%;
-            display: flex; 
-            gap: 2rem; 
-            flex-wrap: wrap;
-            box-shadow: 0 0 50px rgba(0, 255, 255, 0.2);
-        }
-        
-        #char-preview { 
-            width: 200px; 
-            height: 200px; 
-            border: 2px solid rgba(0, 255, 255, 0.3); 
-            border-radius: 10px; 
-            object-fit: contain; 
-            background: rgba(0, 255, 255, 0.05);
-        }
-        
-        #dialog-content { flex: 1; min-width: 250px; }
-        #dialog-box h2 { color: #00ffff; margin: 0; font-size: 1.8rem; }
-        .role { color: #a29bfe; font-size: 1rem; margin-bottom: 1rem; font-style: italic; }
-        .backstory { color: #e0e0e0; font-size: 1rem; line-height: 1.7; min-height: 80px; }
-        
-        .close-btn { 
-            background: transparent; 
-            color: #00ffff; 
-            border: 1px solid #00ffff; 
-            padding: 0.8rem 2rem; 
-            cursor: pointer; 
-            font-weight: bold;
-            margin-top: 1rem;
-        }
-        .close-btn:hover { background: #00ffff; color: #0a0e27; }
-
-        @media (max-width: 600px) {
-            #dialog-box { flex-direction: column; align-items: center; text-align: center; }
-            #char-preview { width: 150px; height: 150px; }
-        }
+        #dialog-box { background: #1a1f3a; border: 2px solid #00ffff; padding: 2.5rem; border-radius: 15px; max-width: 800px; width: 90%; display: flex; gap: 2rem; flex-wrap: wrap; box-shadow: 0 0 40px rgba(0,255,255,0.2); }
+        #char-preview { width: 240px; height: 240px; object-fit: contain; background: rgba(0,0,0,0.3); border-radius: 10px; }
+        #dialog-content { flex: 1; min-width: 280px; }
+        #char-name-display { color: #00ffff; margin: 0; font-size: 2rem; }
+        .close-btn { background: transparent; color: #00ffff; border: 1px solid #00ffff; padding: 0.8rem 2rem; cursor: pointer; margin-top: 20px; font-weight: bold; }
+        .close-btn:hover { background: #00ffff; color: #1a1f3a; }
     </style>
 </head>
 <body>
 
+    <button class="back-to-menu" onclick="goBackToMenu()">← BACK</button>
+    
     <div id="content">
-        <button class="back-to-menu" onclick="goBackToMenu()">← BACK</button>
-        
         <div class="header">
             <h1>SPACESHIPS</h1>
-            <p>Vaanuva Command Center</p>
         </div>
-        
         <div class="characters-container" id="characters-container"></div>
     </div>
 
@@ -199,24 +135,24 @@
         <div id="dialog-box">
             <img id="char-preview" src="" alt="Character" class="pixelated_image">
             <div id="dialog-content">
-                <h2 id="char-name"></h2>
-                <div class="role" id="char-role"></div>
-                <div class="backstory" id="char-backstory"></div>
+                <h2 id="char-name-display"></h2>
+                <div id="char-role" style="color:#a29bfe; font-style:italic; margin-bottom:15px; font-size: 1.1rem;"></div>
+                <div id="char-backstory" style="color:#e0e0e0; line-height:1.7; font-size: 1rem;"></div>
                 <button class="close-btn" onclick="closeDialog()">[ DISMISS ]</button>
             </div>
         </div>
     </div>
 
     <script>
-        // MANUALLY ADD YOUR IMAGE NAMES HERE
+        // Adjust 'top' and 'left' to fit your cockpit seats/panels
         const characters = [
-            { id: 1, name: 'Nihaal', role: 'Leader', image: 'Nihaal.png', backstory: 'Fearless commander with decades of space exploration experience. Known for guiding the crew through the most treacherous cosmic storms.' },
-            { id: 2, name: 'Zivan', role: 'Navigator', image: 'Zivan.png', backstory: 'Swift and highly intelligent, Zivan charts precise courses through chaotic asteroid fields.' },
-            { id: 3, name: 'Adhaan', role: 'Engineer', image: 'Adhaan.png', backstory: 'A tough, no-nonsense mechanic who keeps the ship’s pulse beating. He can fix a hyperdrive leak with nothing but a wrench.' },
-            { id: 4, name: 'Izaan', role: 'Scientist', image: 'Izaan.png', backstory: 'A brilliant mind obsessed with the unknown. Izaan spends nights analyzing stellar data, searching for undiscovered worlds.' },
-            { id: 5, name: 'Haibaan', role: 'Pilot', image: 'Haibaan.png', backstory: 'Daring and adventurous, Haibaan views the cockpit as an extension of himself.' },
-            { id: 6, name: 'Rayyan', role: 'Medic', image: 'Rayyan.png', backstory: 'The heart of the ship. A compassionate healer who ensures the crew survives the physical tolls of deep space.' },
-            { id: 7, name: 'Shaadh', role: 'AI', image: 'Shaadh.png', backstory: 'The ship’s central consciousness. Shaadh manages life support and defensive shields with calm efficiency.' }
+            { id: 1, name: 'Nihaal', role: 'Leader', image: 'nihaal.png', top: '65%', left: '45%', backstory: 'Fearless commander...' },
+            { id: 2, name: 'Zivan', role: 'Navigator', image: 'zivan.png', top: '65%', left: '35%', backstory: 'Swift and highly intelligent...' },
+            { id: 3, name: 'Adhaan', role: 'Engineer', image: 'adhaan.png', top: '65%', left: '55%', backstory: 'A tough, no-nonsense mechanic...' },
+            { id: 4, name: 'Izaan', role: 'Scientist', image: 'izaan.png', top: '65%', left: '65%', backstory: 'A brilliant mind...' },
+            { id: 5, name: 'Haibaan', role: 'Pilot', image: 'haibaan.png', top: '65%', left: '25%', backstory: 'Daring and adventurous...' },
+            { id: 6, name: 'Rayyan', role: 'Medic', image: 'rayyan.png', top: '65%', left: '15%', backstory: 'The heart of the ship...' },
+            { id: 7, name: 'Shaadh', role: 'AI', image: 'shaadh.png', top: '65%', left: '75%', backstory: 'The ship’s consciousness...' }
         ];
 
         function initCharacters() {
@@ -226,36 +162,27 @@
             characters.forEach(char => {
                 const charEl = document.createElement('div');
                 charEl.className = 'character';
-                
-                // Fallback: If image is missing, it logs an error and could show a placeholder
+                charEl.style.top = char.top;
+                charEl.style.left = char.left;
+
                 charEl.innerHTML = `
                     <img src="images/${char.image}" 
                          alt="${char.name}" 
                          class="character-sprite pixelated_image"
-                         onerror="this.src='images/fallback.png'; console.warn('Missing: ${char.image}')">
+                         onerror="this.src='images/fallback.png'">
+                    <br>
                     <div class="character-name">${char.name}</div>
                 `;
                 
-                charEl.addEventListener('click', () => selectCharacter(char, charEl));
+                charEl.addEventListener('click', () => {
+                    document.getElementById('char-preview').src = `images/${char.image}`;
+                    document.getElementById('char-name-display').textContent = char.name;
+                    document.getElementById('char-role').textContent = `[ ${char.role} ]`;
+                    typeText(char.backstory);
+                    document.getElementById('dialog-overlay').classList.add('active');
+                });
                 container.appendChild(charEl);
             });
-        }
-
-        function selectCharacter(char, element) {
-            document.querySelectorAll('.character').forEach(c => c.classList.remove('selected'));
-            element.classList.add('selected');
-            setTimeout(() => showDialog(char), 200);
-        }
-
-        function showDialog(char) {
-            const preview = document.getElementById('char-preview');
-            preview.src = `images/${char.image}`;
-            preview.onerror = () => preview.src = 'images/fallback.png';
-
-            document.getElementById('char-name').textContent = char.name;
-            document.getElementById('char-role').textContent = `[ ${char.role} ]`;
-            typeText(char.backstory);
-            document.getElementById('dialog-overlay').classList.add('active');
         }
 
         function typeText(text) {
@@ -263,11 +190,9 @@
             element.textContent = '';
             let index = 0;
             if (window.typingInterval) clearInterval(window.typingInterval);
-            
             window.typingInterval = setInterval(() => {
                 if (index < text.length) {
-                    element.textContent += text[index];
-                    index++;
+                    element.textContent += text[index++];
                 } else {
                     clearInterval(window.typingInterval);
                 }
@@ -276,13 +201,9 @@
 
         function closeDialog() {
             document.getElementById('dialog-overlay').classList.remove('active');
-            document.querySelectorAll('.character').forEach(c => c.classList.remove('selected'));
-            if (window.typingInterval) clearInterval(window.typingInterval);
         }
 
-        function goBackToMenu() {
-            window.location.href = 'back.html';
-        }
+        function goBackToMenu() { window.location.href = 'back.html'; }
 
         window.addEventListener('DOMContentLoaded', initCharacters);
     </script>
