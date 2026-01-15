@@ -3,19 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnonymousAgents | Spaceships</title>
+    <title>vaanuva.com | Spaceships</title>
     <style>
         /* Modern reset and background fit */
         body, html { 
-            margin: 0; 
-            padding: 0; 
-            width: 100%; 
-            min-height: 100%; 
-            /* Fixed background that covers the entire viewport */
-            background: url('images/testbg.jpg') center center / cover no-repeat fixed;
-            font-family: 'Courier New', monospace; 
-            background-color: #0a0e27; /* Fallback color */
-        }
+    margin: 0; 
+    padding: 0; 
+    width: 100%; 
+    height: 100%; 
+    /* This makes your cockpit image fit any screen size */
+    background: #0a0e27 url('images/testbg.jpg') center center / cover no-repeat fixed;
+    
+    /* This ensures the background itself stays sharp if it's pixel art */
+    image-rendering: pixelated; 
+    
+    font-family: 'Courier New', monospace; 
+    overflow-x: hidden;
+}
+
+/* Specific class for your character sprites */
+.pixelated_image {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
         
         #content { 
             position: relative; 
@@ -94,24 +105,18 @@
             filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.8)); 
             transform: scale(1.1) translateY(-10px); 
         }
+        
         .character-name { 
             color: #00ffff; 
-            font-size: 0.8rem; 
+            font-size: 0.9rem; 
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 1px;
-            opacity: 0.7;
-            transition: opacity 0.3s ease; 
         }
-        .character:hover .character-name { opacity: 1; }
         
         .character.selected .character-sprite { 
-            animation: floatForward 0.6s forwards; 
-        }
-        
-        @keyframes floatForward { 
-            0% { transform: translateY(0); } 
-            100% { transform: translateY(-40px) scale(1.2); filter: drop-shadow(0 0 20px #00ffff); } 
+            transform: translateY(-20px) scale(1.1);
+            filter: drop-shadow(0 0 20px #00ffff);
         }
         
         /* Dialog Box Styling */
@@ -121,8 +126,8 @@
             left: 0; 
             width: 100%; 
             height: 100%; 
-            background: rgba(10, 14, 39, 0.85); 
-            backdrop-filter: blur(5px);
+            background: rgba(10, 14, 39, 0.9); 
+            backdrop-filter: blur(8px);
             opacity: 0; 
             pointer-events: none; 
             z-index: 2000; 
@@ -140,14 +145,11 @@
             border-radius: 15px; 
             max-width: 800px; 
             width: 90%;
-            transform: scale(0.9);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            box-shadow: 0 0 50px rgba(0, 255, 255, 0.3);
             display: flex; 
             gap: 2rem; 
             flex-wrap: wrap;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.2);
         }
-        #dialog-overlay.active #dialog-box { transform: scale(1); }
         
         #char-preview { 
             width: 200px; 
@@ -159,30 +161,24 @@
         }
         
         #dialog-content { flex: 1; min-width: 250px; }
-        #dialog-box h2 { color: #00ffff; margin: 0; font-size: 1.8rem; letter-spacing: 2px; }
-        #dialog-box .role { color: #a29bfe; font-size: 1rem; margin-bottom: 1.5rem; font-style: italic; }
-        #dialog-box .backstory { color: #e0e0e0; font-size: 1rem; line-height: 1.7; margin-bottom: 2rem; min-height: 100px; }
+        #dialog-box h2 { color: #00ffff; margin: 0; font-size: 1.8rem; }
+        .role { color: #a29bfe; font-size: 1rem; margin-bottom: 1rem; font-style: italic; }
+        .backstory { color: #e0e0e0; font-size: 1rem; line-height: 1.7; min-height: 80px; }
         
         .close-btn { 
             background: transparent; 
             color: #00ffff; 
             border: 1px solid #00ffff; 
             padding: 0.8rem 2rem; 
-            border-radius: 5px; 
             cursor: pointer; 
-            font-weight: bold; 
-            transition: all 0.3s ease; 
-            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 1rem;
         }
-        .close-btn:hover { background: #00ffff; color: #0a0e27; box-shadow: 0 0 20px #00ffff; }
+        .close-btn:hover { background: #00ffff; color: #0a0e27; }
 
-        /* Responsive adjustments */
         @media (max-width: 600px) {
-            #dialog-box { flex-direction: column; align-items: center; text-align: center; padding: 1.5rem; }
+            #dialog-box { flex-direction: column; align-items: center; text-align: center; }
             #char-preview { width: 150px; height: 150px; }
-            .characters-container { gap: 1rem; }
-            .character { width: 120px; }
-            .character-sprite { width: 100px; height: 100px; }
         }
     </style>
 </head>
@@ -193,7 +189,7 @@
         
         <div class="header">
             <h1>SPACESHIPS</h1>
-            <p>Meet the Crew</p>
+            <p>Vaanuva Command Center</p>
         </div>
         
         <div class="characters-container" id="characters-container"></div>
@@ -201,7 +197,7 @@
 
     <div id="dialog-overlay" onclick="if(event.target === this) closeDialog()">
         <div id="dialog-box">
-            <img id="char-preview" src="" alt="Character">
+            <img id="char-preview" src="" alt="Character" class="pixelated_image">
             <div id="dialog-content">
                 <h2 id="char-name"></h2>
                 <div class="role" id="char-role"></div>
@@ -212,87 +208,85 @@
     </div>
 
     <script>
-    const characters = [
-        { id: 1, name: 'Nihaal', role: 'Leader', image: 'Nihaal.png', backstory: 'Fearless commander with decades of space exploration experience...' },
-        { id: 2, name: 'Zivan', role: 'Navigator', image: 'Zivan.png', backstory: 'Swift and highly intelligent, Zivan charts precise courses...' },
-        { id: 3, name: 'Adhaan', role: 'Engineer', image: 'Adhaan.png', backstory: 'A tough, no-nonsense mechanic who keeps the ship’s pulse beating...' },
-        { id: 4, name: 'Izaan', role: 'Scientist', image: 'Izaan.png', backstory: 'A brilliant mind obsessed with the unknown...' },
-        { id: 5, name: 'Haibaan', role: 'Pilot', image: 'Haibaan.png', backstory: 'Daring and adventurous, Haibaan views the cockpit as an extension of himself...' },
-        { id: 6, name: 'Rayyan', role: 'Medic', image: 'Rayyan.png', backstory: 'The heart of the ship. A compassionate healer...' },
-        { id: 7, name: 'Shaadh', role: 'AI', image: 'Shaadh.png', backstory: 'The ship’s central consciousness...' }
-    ];
+        // MANUALLY ADD YOUR IMAGE NAMES HERE
+        const characters = [
+            { id: 1, name: 'Nihaal', role: 'Leader', image: 'nihaal.png', backstory: 'Fearless commander with decades of space exploration experience. Known for guiding the crew through the most treacherous cosmic storms.' },
+            { id: 2, name: 'Zivan', role: 'Navigator', image: 'zivan.png', backstory: 'Swift and highly intelligent, Zivan charts precise courses through chaotic asteroid fields.' },
+            { id: 3, name: 'Adhaan', role: 'Engineer', image: 'adhaan.png', backstory: 'A tough, no-nonsense mechanic who keeps the ship’s pulse beating. He can fix a hyperdrive leak with nothing but a wrench.' },
+            { id: 4, name: 'Izaan', role: 'Scientist', image: 'izaan.png', backstory: 'A brilliant mind obsessed with the unknown. Izaan spends nights analyzing stellar data, searching for undiscovered worlds.' },
+            { id: 5, name: 'Haibaan', role: 'Pilot', image: 'haibaan.png', backstory: 'Daring and adventurous, Haibaan views the cockpit as an extension of himself.' },
+            { id: 6, name: 'Rayyan', role: 'Medic', image: 'rayyan.png', backstory: 'The heart of the ship. A compassionate healer who ensures the crew survives the physical tolls of deep space.' },
+            { id: 7, name: 'Shaadh', role: 'AI', image: 'shaadh.png', backstory: 'The ship’s central consciousness. Shaadh manages life support and defensive shields with calm efficiency.' }
+        ];
 
-    function initCharacters() {
-        const container = document.getElementById('characters-container');
-        container.innerHTML = '';
+        function initCharacters() {
+            const container = document.getElementById('characters-container');
+            container.innerHTML = '';
 
-        characters.forEach(char => {
-            const charEl = document.createElement('div');
-            charEl.className = 'character';
+            characters.forEach(char => {
+                const charEl = document.createElement('div');
+                charEl.className = 'character';
+                
+                // Fallback: If image is missing, it logs an error and could show a placeholder
+                charEl.innerHTML = `
+                    <img src="images/${char.image}" 
+                         alt="${char.name}" 
+                         class="character-sprite pixelated_image"
+                         onerror="this.src='images/fallback.png'; console.warn('Missing: ${char.image}')">
+                    <div class="character-name">${char.name}</div>
+                `;
+                
+                charEl.addEventListener('click', () => selectCharacter(char, charEl));
+                container.appendChild(charEl);
+            });
+        }
+
+        function selectCharacter(char, element) {
+            document.querySelectorAll('.character').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+            setTimeout(() => showDialog(char), 200);
+        }
+
+        function showDialog(char) {
+            const preview = document.getElementById('char-preview');
+            preview.src = `images/${char.image}`;
+            preview.onerror = () => preview.src = 'images/fallback.png';
+
+            document.getElementById('char-name').textContent = char.name;
+            document.getElementById('char-role').textContent = `[ ${char.role} ]`;
+            typeText(char.backstory);
+            document.getElementById('dialog-overlay').classList.add('active');
+        }
+
+        function typeText(text) {
+            const element = document.getElementById('char-backstory');
+            element.textContent = '';
+            let index = 0;
+            if (window.typingInterval) clearInterval(window.typingInterval);
             
-            // Using the manual 'image' property from the array
-            charEl.innerHTML = `
-                <img src="images/${char.image}" alt="${char.name}" class="character-sprite">
-                <div class="character-name">${char.name}</div>
-            `;
-            
-            charEl.addEventListener('click', () => selectCharacter(char, charEl));
-            container.appendChild(charEl);
-        });
-    }
+            window.typingInterval = setInterval(() => {
+                if (index < text.length) {
+                    element.textContent += text[index];
+                    index++;
+                } else {
+                    clearInterval(window.typingInterval);
+                }
+            }, 20);
+        }
 
-    function selectCharacter(char, element) {
-        document.querySelectorAll('.character').forEach(c => c.classList.remove('selected'));
-        element.classList.add('selected');
-        setTimeout(() => showDialog(char), 300);
-    }
+        function closeDialog() {
+            document.getElementById('dialog-overlay').classList.remove('active');
+            document.querySelectorAll('.character').forEach(c => c.classList.remove('selected'));
+            if (window.typingInterval) clearInterval(window.typingInterval);
+        }
 
-    function showDialog(char) {
-        // Updated to use the same manual image path in the popup
-        document.getElementById('char-preview').src = `images/${char.image}`;
-        document.getElementById('char-name').textContent = char.name;
-        document.getElementById('char-role').textContent = `[ ${char.role} ]`;
-        typeText(char.backstory);
-        document.getElementById('dialog-overlay').classList.add('active');
-    }
+        function goBackToMenu() {
+            window.location.href = 'back.html';
+        }
 
-    function typeText(text) {
-        const element = document.getElementById('char-backstory');
-        element.textContent = '';
-        let index = 0;
-        if (window.typingInterval) clearInterval(window.typingInterval);
-        
-        window.typingInterval = setInterval(() => {
-            if (index < text.length) {
-                element.textContent += text[index];
-                index++;
-            } else {
-                clearInterval(window.typingInterval);
-            }
-        }, 20);
-    }
-
-    function closeDialog() {
-        document.getElementById('dialog-overlay').classList.remove('active');
-        document.querySelectorAll('.character').forEach(c => c.classList.remove('selected'));
-        if (window.typingInterval) clearInterval(window.typingInterval);
-    }
-
-    function goBackToMenu() {
-        window.location.href = 'back.html';
-    }
-
-    window.addEventListener('DOMContentLoaded', initCharacters);
-</script>
+        window.addEventListener('DOMContentLoaded', initCharacters);
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
 
 
