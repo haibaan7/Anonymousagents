@@ -10,7 +10,7 @@
             background: #0a0e27 url('images/testbg.jpg') center center / cover no-repeat fixed;
             image-rendering: pixelated; 
             font-family: 'Courier New', monospace; 
-            overflow-x: hidden; 
+            overflow: hidden; 
         }
 
         .pixelated_image {
@@ -20,32 +20,34 @@
         }
         
         #content { 
-            position: relative; z-index: 10; width: 100%; min-height: 100vh; 
+            position: relative; z-index: 10; width: 100vw; height: 100vh; 
         }
         
         .header { 
-            text-align: center; color: white; padding-top: 40px; pointer-events: none;
+            position: absolute; top: 40px; width: 100%; text-align: center; 
+            color: white; pointer-events: none; z-index: 20;
         }
 
         .header h1 { 
-            font-size: clamp(2rem, 8vw, 3.5rem); letter-spacing: 8px; margin: 0; 
+            font-size: clamp(1.5rem, 6vw, 3.5rem); letter-spacing: 6px; margin: 0; 
             color: #00ffff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.6); 
         }
         
         .back-to-menu { 
-            position: fixed; top: 20px; left: 20px; background: #00ffff; color: #0a0e27; 
-            border: none; padding: 0.75rem 1.5rem; border-radius: 25px; cursor: pointer; 
-            font-weight: bold; z-index: 1000; 
+            position: fixed; top: 15px; left: 15px; background: #00ffff; color: #0a0e27; 
+            border: none; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; 
+            font-weight: bold; z-index: 1000; font-size: 0.8rem;
         }
 
-        /* --- DESKTOP POSITIONING (Default) --- */
         .characters-container { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
         }
         
+        /* --- DESKTOP SIZES --- */
         .character { 
             position: absolute; cursor: pointer; text-align: center; 
-            transition: all 0.3s ease; width: 220px; transform: translate(-50%, -50%); 
+            transition: all 0.3s ease; width: 220px; 
+            transform: translate(-50%, -50%); 
         }
 
         .character-sprite { 
@@ -53,39 +55,34 @@
             filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.3)); 
         }
 
-        /* --- MOBILE RESPONSIVE FIX --- */
+        /* --- MOBILE SCALE (Keeps PC positioning but smaller) --- */
         @media (max-width: 768px) {
-            body { overflow-y: auto; } /* Allow scrolling on mobile */
-
-            .characters-container { 
-                position: relative; /* Change from absolute to normal flow */
-                display: flex; flex-wrap: wrap; justify-content: center;
-                gap: 20px; padding: 100px 20px 50px 20px; height: auto;
-            }
-
             .character { 
-                position: static !important; /* Ignore the 'top' and 'left' from JS */
-                transform: none !important; width: 140px; /* Smaller for mobile */
+                width: 100%; /* Much smaller width container */
             }
 
             .character-sprite { 
-                width: 120px; height: 120px; 
+                width: 80px; /* Small sprites for mobile */
+                height: 80px; 
             }
 
-            .header { position: relative; top: 20px; }
+            .character-name {
+                font-size: 0.6rem !important; /* Smaller text */
+                padding: 2px 4px !important;
+            }
         }
 
         .character:hover .character-sprite { 
-            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.9)); transform: scale(1.05); 
+            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.9)); transform: scale(1.1); 
         }
         
         .character-name { 
             color: #00ffff; font-size: 0.9rem; font-weight: bold; text-transform: uppercase;
-            background: rgba(0, 0, 0, 0.6); padding: 4px 8px; display: inline-block;
-            margin-top: 5px; border: 1px solid rgba(0, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.7); padding: 4px 8px; display: inline-block;
+            margin-top: 5px; border: 1px solid rgba(0, 255, 255, 0.5);
         }
         
-        /* Dialog Box */
+        /* Dialog Box Responsive */
         #dialog-overlay { 
             position: fixed; inset: 0; background: rgba(10, 14, 39, 0.9); 
             backdrop-filter: blur(8px); opacity: 0; pointer-events: none; 
@@ -95,21 +92,23 @@
         #dialog-overlay.active { opacity: 1; pointer-events: auto; }
         #dialog-box { 
             background: #1a1f3a; border: 2px solid #00ffff; padding: 2rem; 
-            border-radius: 15px; max-width: 800px; width: 90%; display: flex; 
+            border-radius: 15px; max-width: 800px; width: 85%; display: flex; 
             gap: 2rem; flex-wrap: wrap; 
         }
-        #char-preview { width: 200px; height: 200px; object-fit: contain; }
-        #dialog-content { flex: 1; min-width: 250px; }
+        #char-preview { width: 180px; height: 180px; object-fit: contain; }
+        #dialog-content { flex: 1; min-width: 220px; }
         
         @media (max-width: 600px) {
-            #dialog-box { flex-direction: column; align-items: center; text-align: center; padding: 1.5rem; }
-            #char-name-display { font-size: 1.5rem; }
+            #dialog-box { flex-direction: column; align-items: center; text-align: center; padding: 1rem; }
+            #char-preview { width: 140px; height: 140px; }
+            #char-name-display { font-size: 1.4rem; }
+            #char-backstory { font-size: 0.9rem; }
         }
 
         #char-name-display { color: #00ffff; margin: 0; font-size: 2rem; }
         .close-btn { 
             background: transparent; color: #00ffff; border: 1px solid #00ffff; 
-            padding: 0.8rem 2rem; cursor: pointer; margin-top: 20px; font-weight: bold; 
+            padding: 0.6rem 1.5rem; cursor: pointer; margin-top: 15px; font-weight: bold; 
         }
     </style>
 </head>
@@ -129,8 +128,8 @@
             <img id="char-preview" src="" alt="Character" class="pixelated_image">
             <div id="dialog-content">
                 <h2 id="char-name-display"></h2>
-                <div id="char-role" style="color:#a29bfe; font-style:italic; margin-bottom:15px;"></div>
-                <div id="char-backstory" style="color:#ced4da; line-height:1.6;"></div>
+                <div id="char-role" style="color:#a29bfe; font-style:italic; margin-bottom:10px;"></div>
+                <div id="char-backstory" style="color:#ced4da; line-height:1.5;"></div>
                 <button class="close-btn" onclick="closeDialog()">[ DISMISS ]</button>
             </div>
         </div>
@@ -138,32 +137,27 @@
 
     <script>
         const characters = [
-            { id: 1, name: 'Nihaal', role: 'Leader', image: 'Nihaal.png', top: '65%', left: '45%', backstory: 'Fearless commander with decades of experience...' },
+            { id: 1, name: 'Nihaal', role: 'Leader', image: 'Nihaal.png', top: '65%', left: '50%', backstory: 'Fearless commander with decades of experience...' },
             { id: 2, name: 'Zivan', role: 'Navigator', image: 'Zivan.png', top: '65%', left: '35%', backstory: 'Swift and highly intelligent navigator...' },
-            { id: 3, name: 'Adhaan', role: 'Engineer', image: 'Adhaan.png', top: '65%', left: '55%', backstory: 'A tough mechanic who keeps the ship running.' },
-            { id: 4, name: 'Izaan', role: 'Scientist', image: 'Izaan.png', top: '65%', left: '65%', backstory: 'A brilliant mind obsessed with the unknown.' },
-            { id: 5, name: 'Haibaan', role: 'Pilot', image: 'Haibaan.png', top: '65%', left: '25%', backstory: 'Daring and adventurous pilot.' },
-            { id: 6, name: 'Rayyan', role: 'Medic', image: 'Rayyan.png', top: '65%', left: '15%', backstory: 'A compassionate healer for the crew.' },
-            { id: 7, name: 'Shaadh', role: 'AI', image: 'Shaadh.png', top: '65%', left: '75%', backstory: 'The ships central artificial consciousness.' }
+            { id: 3, name: 'Adhaan', role: 'Engineer', image: 'Adhaan.png', top: '65%', left: '65%', backstory: 'A tough mechanic who keeps the ship running.' },
+            { id: 4, name: 'Izaan', role: 'Scientist', image: 'Izaan.png', top: '65%', left: '80%', backstory: 'A brilliant mind obsessed with the unknown.' },
+            { id: 5, name: 'Haibaan', role: 'Pilot', image: 'Haibaan.png', top: '65%', left: '20%', backstory: 'Daring and adventurous pilot.' },
+            { id: 6, name: 'Rayyan', role: 'Medic', image: 'Rayyan.png', top: '65%', left: '5%', backstory: 'A compassionate healer for the crew.' },
+            { id: 7, name: 'Shaadh', role: 'AI', image: 'Shaadh.png', top: '65%', left: '95%', backstory: 'The ships central artificial consciousness.' }
         ];
 
         function initCharacters() {
             const container = document.getElementById('characters-container');
             container.innerHTML = '';
-
             characters.forEach(char => {
                 const charEl = document.createElement('div');
                 charEl.className = 'character';
-                
-                // Only desktop uses these; Mobile CSS overrides this
                 charEl.style.top = char.top;
                 charEl.style.left = char.left;
-
                 charEl.innerHTML = `
                     <img src="images/${char.image}" alt="${char.name}" class="character-sprite pixelated_image" onerror="this.src='images/fallback.png'">
                     <br><div class="character-name">${char.name}</div>
                 `;
-                
                 charEl.addEventListener('click', () => {
                     document.getElementById('char-preview').src = `images/${char.image}`;
                     document.getElementById('char-name-display').textContent = char.name;
