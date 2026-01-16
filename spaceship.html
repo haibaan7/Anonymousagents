@@ -57,30 +57,39 @@
 
         /* --- MOBILE SCALE (Keeps PC positioning but smaller) --- */
         @media (max-width: 768px) {
-            .character { 
-                width: 100%; /* Much smaller width container */
-            }
+           .character { 
+        position: absolute; 
+        cursor: pointer; 
+        text-align: center; 
+        transition: all 0.3s ease; 
+        /* FIX: Shrink the container so they don't overlap hitboxes */
+        width: 120px; 
+        height: auto;
+        transform: translate(-50%, -50%); 
+        z-index: 50;
+    }
 
-            .character-sprite { 
-                width: 80px; /* Small sprites for mobile */
-                height: 80px; 
-            }
+    .character-sprite { 
+        width: 100%; /* Follows the container width */
+        height: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.3)); 
+        /* FIX: Ensures the click registers on the image itself */
+        pointer-events: auto; 
+    }
 
-            .character-name {
-                font-size: 0.6rem !important; /* Smaller text */
-                padding: 2px 4px !important;
-            }
-        }
-
-        .character:hover .character-sprite { 
-            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.9)); transform: scale(1.1); 
+    @media (max-width: 768px) {
+        .character { 
+            /* FIX: Much smaller footprint on mobile to prevent overlapping */
+            width: 60px; 
         }
         
-        .character-name { 
-            color: #00ffff; font-size: 0.9rem; font-weight: bold; text-transform: uppercase;
-            background: rgba(0, 0, 0, 0.7); padding: 4px 8px; display: inline-block;
-            margin-top: 5px; border: 1px solid rgba(0, 255, 255, 0.5);
+        .character-name {
+            font-size: 0.5rem !important;
+            padding: 1px 3px !important;
+            white-space: nowrap;
         }
+    }
         
         /* Dialog Box Responsive */
         #dialog-overlay { 
@@ -186,6 +195,7 @@
     </script>
 </body>
 </html>
+
 
 
 
