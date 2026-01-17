@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>vaanuva.com | Spaceships</title>
     <style>
-        * { box-sizing: border-box; } /* Prevents layout glitching */
+        * { box-sizing: border-box; }
         
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
@@ -38,22 +38,43 @@
         
         .character { 
             position: absolute; cursor: pointer; text-align: center; 
-            transition: transform 0.2s ease; width: 120px; 
-            transform: translate(-50%, -50%); z-index: 15;
+            transition: transform 0.2s ease; 
+            /* FIXED: Standard width for PC */
+            width: 120px; 
+            transform: translate(-50%, -50%); 
+            z-index: 15;
+            /* Prevents selecting text when tapping quickly */
+            user-select: none;
+            -webkit-user-select: none;
         }
         
         .character-sprite { 
             width: 100px; height: 100px; object-fit: contain; 
             filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.3));
+            pointer-events: auto;
         }
 
+        /* --- MOBILE HITBOX FIX --- */
         @media (max-width: 768px) {
-            .character { width: 70px; }
-            .character-sprite { width: 60px; height: 60px; }
-            .character-name { font-size: 0.5rem !important; }
+            .character { 
+                /* FIXED: Tiny width prevents overlapping click zones */
+                width: 50px; 
+            }
+            .character-sprite { 
+                width: 65px; 
+                height: 65px; 
+            }
+            .character-name { 
+                font-size: 0.5rem !important;
+                white-space: nowrap;
+                padding: 2px 4px !important;
+            }
         }
 
-        .character:hover { z-index: 100; transform: translate(-50%, -55%) scale(1.1); }
+        .character:active, .character:hover { 
+            z-index: 100; 
+            transform: translate(-50%, -55%) scale(1.1); 
+        }
         
         .character-name { 
             color: #00ffff; font-size: 0.75rem; font-weight: bold; text-transform: uppercase;
@@ -78,14 +99,19 @@
 
         .id-header { background: #00ffff; color: #0a0e27; padding: 8px; text-align: center; font-weight: bold; font-size: 0.9rem; }
         .id-body { display: flex; padding: 20px; gap: 20px; align-items: center; }
-        .id-photo { flex: 0 0 120px; height: 120px; border: 1px solid #00ffff; background: #000; }
+        .id-photo { flex: 0 0 100px; height: 100px; border: 1px solid #00ffff; background: #000; overflow: hidden;}
         #char-preview { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
         .id-stats { flex: 1; color: #fff; font-size: 0.85rem; line-height: 1.6; }
         .stat-line { margin-bottom: 4px; }
-        .label { color: #00ffff; font-weight: bold; text-transform: uppercase; margin-right: 5px; }
+        .label { color: #00ffff; font-weight: bold; text-transform: uppercase; margin-right: 5px; font-size: 0.7rem; }
         
         .id-footer { padding: 10px; text-align: center; background: rgba(255,255,255,0.05); }
-        .close-btn { background: #ff0055; color: white; border: none; padding: 8px 25px; cursor: pointer; font-weight: bold; font-family: inherit; }
+        .close-btn { background: #ff0055; color: white; border: none; padding: 10px 30px; cursor: pointer; font-weight: bold; font-family: inherit; }
+
+        @media (max-width: 480px) {
+            .id-body { flex-direction: column; text-align: center; padding: 15px; }
+            .id-photo { flex: 0 0 100px; width: 100px; }
+        }
     </style>
 </head>
 <body>
@@ -103,7 +129,7 @@
             <div class="id-body">
                 <div class="id-photo"><img id="char-preview" src=""></div>
                 <div class="id-stats">
-                    <h2 id="char-name-display" style="margin:0 0 10px 0; letter-spacing:2px; border-bottom:1px solid #00ffff;"></h2>
+                    <h2 id="char-name-display" style="margin:0 0 10px 0; letter-spacing:2px; border-bottom:1px solid #00ffff; font-size: 1.2rem;"></h2>
                     <div class="stat-line"><span class="label">Role:</span><span id="id-role"></span></div>
                     <div class="stat-line"><span class="label">Weapons:</span><span id="id-weapons"></span></div>
                     <div class="stat-line"><span class="label">Gadgets:</span><span id="id-gadgets"></span></div>
@@ -117,15 +143,15 @@
     </div>
 
     <script>
-        // Check character image names (Case Sensitive: Haiyun.png is different from haiyun.png)
         const characters = [
-            { id: 1, name: 'Haiyun', role: 'Pilot', weapons: 'Sword & Sniper', gadgets: 'Water Grenade', element: 'Water', image: 'Haibaan.png', top: '65%', left: '50%' },
-            { id: 2, name: 'Nihaal', role: 'Leader', weapons: 'Shield', gadgets: 'Energy Blast Cannon', element: 'Energy', image: 'Nihaal.png', top: '65%', left: '40%' },
-            { id: 3, name: 'Zivil', role: 'Fighter', weapons: 'Staff', gadgets: 'Ice Granade', element: 'Ice', image: 'Zivan.png', top: '65%', left: '30%' },
-            { id: 4, name: 'Adhaan', role: 'Engineer', weapons: 'Pistol', gadgets: 'Earth Shield', element: 'Earth', image: 'Adhaan.png', top: '65%', left: '60%' },
-            { id: 5, name: 'Inzi', role: 'Scientist', weapons: 'Dagger', gadgets: 'Smoke Granades', element: 'Lightning', image: 'Izaan.png', top: '65%', left: '70%' },
-            { id: 6, name: 'Rolin', role: 'Medic', weapons: 'Gauntlet And Staff', gadgets: 'Minion Granade', element: 'Time', image: 'Rayyan.png', top: '65%', left: '20%' },
-            { id: 7, name: 'Shah', role: 'Navigator', weapons: 'Sword', gadgets: 'Lava Shied', element: 'Fire', image: 'Shaadh.png', top: '65%', left: '95%' }
+            /* FIXED: Adjusted left percentages to provide more "touch room" between characters */
+            { id: 1, name: 'Haiyun', role: 'Pilot', weapons: 'Sword & Sniper', gadgets: 'Water Grenade', element: 'Water', image: 'Haibaan.png', top: '70%', left: '50%' },
+            { id: 2, name: 'Nihaal', role: 'Leader', weapons: 'Shield', gadgets: 'Energy Cannon', element: 'Energy', image: 'Nihaal.png', top: '70%', left: '40%' },
+            { id: 3, name: 'Zivil', role: 'Fighter', weapons: 'Staff', gadgets: 'Ice Granade', element: 'Ice', image: 'Zivan.png', top: '70%', left: '60%' },
+            { id: 4, name: 'Adhaan', role: 'Engineer', weapons: 'Pistol', gadgets: 'Earth Shield', element: 'Earth', image: 'Adhaan.png', top: '70%', left: '70%' },
+            { id: 5, name: 'Inzi', role: 'Scientist', weapons: 'Dagger', gadgets: 'Smoke Granades', element: 'Lightning', image: 'Izaan.png', top: '70%', left: '30%' },
+            { id: 6, name: 'Rolin', role: 'Medic', weapons: 'Gauntlet/Staff', gadgets: 'Minion Granade', element: 'Time', image: 'Rayyan.png', top: '70%', left: '20%' },
+            { id: 7, name: 'Shah', role: 'Navigator', weapons: 'Sword', gadgets: 'Lava Shield', element: 'Fire', image: 'Shaadh.png', top: '70%', left: '80%' }
         ];
 
         function initCharacters() {
@@ -136,29 +162,36 @@
                 charEl.className = 'character';
                 charEl.style.top = char.top;
                 charEl.style.left = char.left;
+                
                 charEl.innerHTML = `
                     <img src="images/${char.image}" class="character-sprite" onerror="this.src='images/fallback.png'">
                     <br><div class="character-name">${char.name}</div>
                 `;
-                charEl.onclick = (e) => {
+
+                // use 'pointerdown' for faster response on mobile
+                charEl.onpointerdown = (e) => {
                     e.stopPropagation();
-                    document.getElementById('char-preview').src = `images/${char.image}`;
-                    document.getElementById('char-name-display').innerText = char.name;
-                    document.getElementById('id-role').innerText = char.role;
-                    document.getElementById('id-weapons').innerText = char.weapons;
-                    document.getElementById('id-gadgets').innerText = char.gadgets;
-                    document.getElementById('id-element').innerText = char.element;
-                    document.getElementById('dialog-overlay').classList.add('active');
+                    openDialog(char);
                 };
+                
                 container.appendChild(charEl);
             });
         }
 
+        function openDialog(char) {
+            document.getElementById('char-preview').src = `images/${char.image}`;
+            document.getElementById('char-name-display').innerText = char.name;
+            document.getElementById('id-role').innerText = char.role;
+            document.getElementById('id-weapons').innerText = char.weapons;
+            document.getElementById('id-gadgets').innerText = char.gadgets;
+            document.getElementById('id-element').innerText = char.element;
+            document.getElementById('dialog-overlay').classList.add('active');
+        }
+
         function closeDialog() { document.getElementById('dialog-overlay').classList.remove('active'); }
         function goBackToMenu() { window.location.href = 'back.html'; }
+        
         window.onload = initCharacters;
     </script>
 </body>
 </html>
-
-
