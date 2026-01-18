@@ -3,55 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <title>Anonymous Agents | Games</title>
     <style>
+        /* ... Keep all your existing CSS the same ... */
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #0a0e27; font-family: 'Courier New', monospace; color: white; }
-        
         #content { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%); position: relative; overflow: hidden; }
-        
-        /* Animated background grid */
-        .grid-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: 
-            linear-gradient(0deg, transparent 24%, #00ffff 25%, #00ffff 26%, transparent 27%, transparent 74%, #00ffff 75%, #00ffff 76%, transparent 77%, transparent),
-            linear-gradient(90deg, transparent 24%, #00ffff 25%, #00ffff 26%, transparent 27%, transparent 74%, #00ffff 75%, #00ffff 76%, transparent 77%, transparent);
-            background-size: 50px 50px; z-index: 1; animation: gridMove 20s linear infinite; }
+        .grid-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: linear-gradient(0deg, transparent 24%, #00ffff 25%, #00ffff 26%, transparent 27%, transparent 74%, #00ffff 75%, #00ffff 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, #00ffff 25%, #00ffff 26%, transparent 27%, transparent 74%, #00ffff 75%, #00ffff 76%, transparent 77%, transparent); background-size: 50px 50px; z-index: 1; animation: gridMove 20s linear infinite; }
         @keyframes gridMove { 0% { transform: translateY(0); } 100% { transform: translateY(50px); } }
-        
-        .terminal-panel { position: relative; z-index: 10; background: rgba(10, 14, 39, 0.8); border: 3px solid #00ffff; border-radius: 15px; padding: 4rem; max-width: 600px; text-align: center; box-shadow: 0 0 40px rgba(0, 255, 255, 0.5), inset 0 0 30px rgba(0, 255, 255, 0.1); }
-        
+        .terminal-panel { position: relative; z-index: 10; background: rgba(10, 14, 39, 0.8); border: 3px solid #00ffff; border-radius: 15px; padding: 2rem; max-width: 600px; width: 90%; text-align: center; box-shadow: 0 0 40px rgba(0, 255, 255, 0.5), inset 0 0 30px rgba(0, 255, 255, 0.1); }
         .terminal-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; justify-content: center; }
         .terminal-dot { width: 12px; height: 12px; border-radius: 50%; background: #00ffff; box-shadow: 0 0 10px #00ffff; }
         .terminal-title { font-size: 0.9rem; color: #a29bfe; letter-spacing: 2px; }
-        
-        .coming-soon { font-size: 3.5rem; letter-spacing: 3px; margin: 2rem 0; color: #00ffff; text-shadow: 0 0 20px #00ffff; animation: pulse 2s infinite; }
+        .coming-soon { font-size: clamp(2rem, 8vw, 3.5rem); letter-spacing: 3px; margin: 2rem 0; color: #00ffff; text-shadow: 0 0 20px #00ffff; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-        
-        .subtitle { font-size: 1.3rem; color: #ddd; margin-bottom: 2rem; letter-spacing: 1px; }
-        
-        /* Loading Bar */
-        .loading-container { margin: 3rem 0; }
-        .loading-text { font-size: 0.9rem; color: #a29bfe; margin-bottom: 1rem; }
+        .loading-container { margin: 2rem 0; }
+        .loading-text { font-size: 0.8rem; color: #a29bfe; margin-bottom: 1rem; }
         .loading-bar { width: 100%; height: 8px; background: rgba(0, 255, 255, 0.2); border: 1px solid #00ffff; border-radius: 5px; overflow: hidden; }
         .loading-progress { height: 100%; background: linear-gradient(90deg, #00ffff, #0099cc); animation: loadingAnim 2s infinite; width: 30%; }
         @keyframes loadingAnim { 0% { width: 0%; } 50% { width: 100%; } 100% { width: 0%; } }
-        
-        /* Blinking Cursor */
         .cursor { display: inline-block; width: 2px; height: 1.2em; background: #00ffff; margin-left: 5px; animation: blink 1s infinite; }
         @keyframes blink { 0%, 49%, 100% { opacity: 1; } 50%, 99% { opacity: 0; } }
-        
-        /* Game Icons */
-        .game-icons { display: flex; justify-content: center; gap: 2rem; margin: 3rem 0; flex-wrap: wrap; }
-        .game-icon { width: 80px; height: 80px; border: 2px solid #00ffff; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; transition: all 0.3s ease; cursor: pointer; box-shadow: 0 0 10px rgba(0, 255, 255, 0.3); }
-        .game-icon:hover { transform: scale(1.2); box-shadow: 0 0 25px rgba(0, 255, 255, 0.8); background: rgba(0, 255, 255, 0.1); }
-        
-        /* Notify Button */
-        .notify-btn { background: linear-gradient(135deg, #00ffff, #0099cc); color: #0a0e27; border: none; padding: 1rem 2.5rem; border-radius: 30px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; letter-spacing: 1px; box-shadow: 0 0 20px rgba(0, 255, 255, 0.4); }
-        .notify-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(0, 255, 255, 0.8); }
-        
-        .divider { color: #00ffff; opacity: 0.5; margin: 2rem 0; font-size: 1.2rem; }
-        
-        /* Back to Menu Button */
-        .back-to-menu { position: absolute; top: 20px; left: 20px; background: #00ffff; color: #0a0e27; border: none; padding: 0.75rem 1.5rem; border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; z-index: 15; }
-        .back-to-menu:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(0, 255, 255, 0.8); }
+        .game-icons { display: flex; justify-content: center; gap: 1.5rem; margin: 2rem 0; flex-wrap: wrap; }
+        .game-icon { width: 70px; height: 70px; border: 2px solid #00ffff; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 2rem; transition: all 0.3s ease; cursor: pointer; box-shadow: 0 0 10px rgba(0, 255, 255, 0.3); }
+        .game-icon:hover { transform: scale(1.1); box-shadow: 0 0 25px rgba(0, 255, 255, 0.8); background: rgba(0, 255, 255, 0.1); }
+        .notify-btn { background: linear-gradient(135deg, #00ffff, #0099cc); color: #0a0e27; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
+        .divider { color: #00ffff; opacity: 0.5; margin: 1.5rem 0; }
+        .back-to-menu { position: absolute; top: 20px; left: 20px; background: #00ffff; color: #0a0e27; border: none; padding: 0.75rem 1.5rem; border-radius: 25px; cursor: pointer; font-weight: bold; z-index: 15; }
     </style>
 </head>
 <body>
@@ -72,8 +50,6 @@
                 🎮 GAMES<span class="cursor"></span>
             </div>
             
-            <p class="subtitle"></p>
-            
             <div class="loading-container">
                 <div class="loading-text">[ INITIALIZING GAME SUITE ]</div>
                 <div class="loading-bar">
@@ -83,18 +59,17 @@
             
             <div class="divider">◆ ◆ ◆</div>
             
-            <p style="color: #a29bfe; font-size: 1rem; margin-bottom: 2rem;">Teaser: Developers are hard at work crafting exciting games for you. Stay tuned!</p>
+            <p style="color: #a29bfe; font-size: 0.9rem;">Hard at work crafting New games. Stay tuned!</p>
             
             <div class="game-icons">
-                <div class="game-icon" title="Space Shooter" onclick="launchGame('spaceshooter.html')">🚀</div>
-                <div class="game-icon" title="Puzzle" onclick="launchGame('puzzlegame.html')">🧩</div>
                 <div class="game-icon" title="Alien Dodger" onclick="launchGame('Alien.html')">⚔️</div>
-                <div class="game-icon" title="Coming Soon">🔍</div>
+                <div class="game-icon" title="Puzzle" onclick="launchGame('puzzlegame.html')">🧩</div>
+                <div class="game-icon" title="Pizza And Beyond" onclick="launchGame('https://rolin-em.itch.io/for-pizza-and-beyond')">🍕</div>
+                <div class="game-icon" title="Coming Soon" onclick="launchGame(null)">🏃</div>
             </div>
             
             <div class="divider">◆ ◆ ◆</div>
             
-            <p style="color: #ddd; margin-bottom: 2rem;">Be among the first to play when games launch</p>
             <button class="notify-btn" onclick="notifyMe()">[ NOTIFY ME ]</button>
         </div>
     </div>
@@ -105,15 +80,17 @@
         }
         
         function launchGame(gamePath) {
-            window.location.href = gamePath;
+            // Check if gamePath is empty, null, or undefined
+            if (!gamePath) {
+                alert("ACCESS DENIED: Game data not found. This sector is still under construction! (Coming Soon)");
+            } else {
+                window.location.href = gamePath;
+            }
         }
         
         function notifyMe() {
             alert('Notification preferences saved! You will be notified when games launch.');
-            // Future: Connect to backend for email signup
         }
     </script>
 </body>
 </html>
-
-
