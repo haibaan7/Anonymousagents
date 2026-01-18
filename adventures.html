@@ -3,105 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AAnonymous Agents</title>
+     <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <title>Anonymous Agents| Adventures</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow-x: hidden; background: #0a0e27; font-family: 'Courier New', monospace; color: white; }
-        
-        #content { 
-            width: 100%; 
-            min-height: 100vh; 
-            padding: clamp(2rem, 5vw, 4rem) 1rem; 
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%); 
-            box-sizing: border-box;
-        }
-        
-        .header { text-align: center; margin-bottom: clamp(2rem, 8vw, 4rem); position: relative; padding: 0 10px; }
-        .header h1 { 
-            font-size: clamp(1.8rem, 8vw, 3rem); 
-            letter-spacing: clamp(4px, 1vw, 8px); 
-            margin: 0; color: #00ffff; 
-            text-shadow: 0 0 20px #00ffff; 
-        }
-        .header p { font-size: clamp(0.9rem, 2vw, 1.2rem); color: #a29bfe; margin: 1rem 0 0 0; }
-        
-        .back-to-menu { 
-            position: absolute; top: 15px; left: 15px; 
-            background: #00ffff; color: #0a0e27; border: none; 
-            padding: 0.6rem 1.2rem; border-radius: 25px; 
-            cursor: pointer; font-weight: bold; transition: all 0.3s ease; z-index: 20; 
-            font-size: 0.8rem;
-        }
+        #content { width: 100%; min-height: 100vh; padding: 4rem 2rem; background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%); }
+        .header { text-align: center; margin-bottom: 4rem; position: relative; }
+        .header h1 { font-size: 3rem; letter-spacing: 8px; margin: 0; color: #00ffff; text-shadow: 0 0 20px #00ffff; }
+        .header p { font-size: 1.2rem; color: #a29bfe; margin: 1rem 0 0 0; }
+        .back-to-menu { position: absolute; top: 20px; left: 20px; background: #00ffff; color: #0a0e27; border: none; padding: 0.75rem 1.5rem; border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; z-index: 5; }
         .back-to-menu:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(0, 255, 255, 0.8); }
-        
         .star-separator { text-align: center; font-size: 1.5rem; color: #00ffff; margin: 2rem 0; animation: twinkle 2s infinite; }
         @keyframes twinkle { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
-        
-        .stories-container { 
-            max-width: 900px; 
-            margin: 0 auto; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 1.5rem; 
-        }
-        
-        .story-card { 
-            background: rgba(26, 31, 58, 0.8); 
-            border: 2px solid #00ffff; 
-            border-radius: 15px; 
-            padding: clamp(1.2rem, 4vw, 2rem); 
-            transition: all 0.3s ease; 
-            cursor: pointer; 
-            position: relative; 
-            overflow: hidden; 
-        }
+        .stories-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 2rem; }
+        .story-card { background: rgba(26, 31, 58, 0.8); border: 2px solid #00ffff; border-radius: 15px; padding: 2rem; transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden; }
         .story-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent); transition: left 0.5s ease; }
         .story-card:hover::before { left: 100%; }
         .story-card:hover { box-shadow: 0 0 30px rgba(0, 255, 255, 0.6), inset 0 0 20px rgba(0, 255, 255, 0.1); transform: translateY(-5px); }
-        
-        .story-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
-        .story-number { font-size: clamp(1.5rem, 4vw, 2rem); color: #00ffff; font-weight: bold; text-shadow: 0 0 10px #00ffff; }
-        .story-title { font-size: clamp(1.2rem, 3.5vw, 1.8rem); color: #00ffff; letter-spacing: 1px; margin: 0; line-height: 1.2; }
-        
-        .mission-tag { 
-            display: inline-block; 
-            background: rgba(0, 255, 255, 0.1); 
-            border: 1px solid #00ffff; 
-            color: #00ffff; 
-            padding: 0.4rem 0.8rem; 
-            border-radius: 20px; 
-            font-size: 0.75rem; 
-            margin-bottom: 1rem; 
-            letter-spacing: 1px;
-        }
-        
-        .story-preview { color: #ddd; font-size: clamp(0.9rem, 2vw, 1rem); line-height: 1.6; margin: 1rem 0; }
-        
-        .story-meta { display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 1.5rem 0; font-size: 0.85rem; color: #a29bfe; }
+        .story-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .story-number { font-size: 2rem; color: #00ffff; font-weight: bold; text-shadow: 0 0 10px #00ffff; }
+        .story-title { font-size: 1.8rem; color: #00ffff; letter-spacing: 2px; margin: 0; }
+        .mission-tag { display: inline-block; background: rgba(0, 255, 255, 0.2); border: 1px solid #00ffff; color: #00ffff; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 1rem; }
+        .story-preview { color: #ddd; font-size: 1rem; line-height: 1.6; margin: 1rem 0; min-height: 60px; }
+        .story-meta { display: flex; gap: 2rem; margin: 1.5rem 0; font-size: 0.9rem; color: #a29bfe; }
         .story-meta span { display: flex; align-items: center; gap: 0.5rem; }
-        
-        .read-btn { 
-            background: linear-gradient(135deg, #00ffff, #0099cc); 
-            color: #0a0e27; 
-            border: none; 
-            padding: 0.75rem 1.5rem; 
-            border-radius: 25px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: all 0.3s ease; 
-            font-size: 0.9rem; 
-            width: 100%; /* Full width on mobile for better ergonomics */
-            max-width: 200px;
-        }
-        .read-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(0, 255, 255, 0.8); }
-        
-        .pixel-divider { text-align: center; margin: 1.5rem 0; color: #00ffff; opacity: 0.3; font-size: 0.8rem; }
-
-        /* Media Query for Mobile Ergonomics */
-        @media (max-width: 600px) {
-            .header { margin-top: 2rem; }
-            .read-btn { max-width: 100%; }
-            .story-meta { gap: 1rem; justify-content: space-between; }
-        }
+        .read-btn { background: linear-gradient(135deg, #00ffff, #0099cc); color: #0a0e27; border: none; padding: 0.75rem 2rem; border-radius: 25px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; font-size: 1rem; }
+        .read-btn:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(0, 255, 255, 0.8); }
+        .pixel-divider { text-align: center; margin: 2rem 0; color: #00ffff; opacity: 0.5; }
     </style>
 </head>
 <body>
@@ -128,7 +56,8 @@
                 mission: 'MISSION: DISCOVERY',
                 preview: 'When a routine space mission leads to a planet that can move on its own, Captain Nihaal and his crew discover that not every cosmic mystery wants to be explored.',
                 duration: '15 min read',
-                difficulty: 'MODERATE'
+                difficulty: 'MODERATE',
+                url: 'stories/story01.html' // Change this to any location you want
             },
             {
                 id: 2,
@@ -137,7 +66,8 @@
                 mission: 'MISSION: SURVIVAL',
                 preview: 'A massive solar storm threatens to destroy the ship. Zephyr must use all navigation skills to steer through the chaos while Spark pilots an emergency course.',
                 duration: '12 min read',
-                difficulty: 'HARD'
+                difficulty: 'HARD',
+                url: 'stories/story02.html'
             },
             {
                 id: 3,
@@ -146,7 +76,8 @@
                 mission: 'MISSION: INVESTIGATION',
                 preview: 'Echo discovers an ancient alien artifact with encrypted messages. The team races against time to decode it before an unknown force intercepts them.',
                 duration: '18 min read',
-                difficulty: 'HARD'
+                difficulty: 'HARD',
+                url: null
             },
             {
                 id: 4,
@@ -155,7 +86,8 @@
                 mission: 'MISSION: REPAIR',
                 preview: 'Critical systems begin to fail mid-journey. Iron must venture into the dangerous engine core to fix a faulty reactor before the ship loses power.',
                 duration: '10 min read',
-                difficulty: 'MODERATE'
+                difficulty: 'MODERATE',
+                url: null
             },
             {
                 id: 5,
@@ -164,7 +96,8 @@
                 mission: 'MISSION: COMMUNICATION',
                 preview: 'A message arrives from Earth with alarming news. Luna and the medical team prepare for the worst while the crew debates their next move.',
                 duration: '14 min read',
-                difficulty: 'EASY'
+                difficulty: 'EASY',
+                url: null
             },
             {
                 id: 6,
@@ -173,7 +106,8 @@
                 mission: 'MISSION: ALIGNMENT',
                 preview: 'Nexus begins exhibiting strange behavior. Is it a malfunction, or has the AI achieved consciousness? The crew must find answers fast.',
                 duration: '20 min read',
-                difficulty: 'HARD'
+                difficulty: 'HARD',
+                url: null
             }
         ];
 
@@ -193,7 +127,7 @@
                         <span>📖 ${story.duration}</span>
                         <span>⚡ ${story.difficulty}</span>
                     </div>
-                    <button class="read-btn" onclick="readStory(${story.id})">[ ENTER STORY ]</button>
+                    <button class="read-btn" onclick="readStory(${index})">[ ENTER STORY ]</button>
                 `;
                 container.appendChild(storyCard);
                 
@@ -206,17 +140,16 @@
             });
         }
 
-        function readStory(id) {
-            // Updated to handle specific folder structure or simple alerts
-            if (id === 1) {
-                window.location.href = 'stories/story01.html';
+        function readStory(index) {
+            const story = stories[index];
+            if (story.url) {
+                window.location.href = story.url;
             } else {
-                alert(`Mission ${id} is currently classified. Coming soon.`);
+                alert(`Story "${story.title}" coming soon...`);
             }
         }
         
         function goBackToHome() {
-            // Using your previous "back" logic
             window.location.href = 'back.html';
         }
 
@@ -224,5 +157,3 @@
     </script>
 </body>
 </html>
-
-
