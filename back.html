@@ -3,36 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
     <title>Anonymous Agents | Hub</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Inter', sans-serif; }
-        canvas { position: fixed; top: 0; left: 0; z-index: 1; }
+        /* ALLOW SCROLLING */
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            width: 100%; 
+            min-height: 100%; 
+            background: #000; 
+            font-family: 'Inter', sans-serif; 
+            overflow-x: hidden; /* Prevent horizontal wobble */
+            overflow-y: auto;   /* Enable vertical scrolling */
+        }
+
+        /* Keep the 3D Stars in the background while scrolling */
+        canvas { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            z-index: 1; 
+            pointer-events: none; 
+        }
 
         #hub-content {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
-            z-index: 10; flex-direction: column;
+            position: relative;
+            width: 100%;
+            min-height: 150vh; /* Make it taller than the screen to enable scrolling */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            padding-top: 20vh; /* Initial top spacing */
         }
 
         .hub-title {
-            color: white; text-align: center; margin-bottom: 3rem;
+            color: white; text-align: center; margin-bottom: 1rem;
             font-size: 3.5rem; letter-spacing: 8px;
             color: #00ffff; text-shadow: 0 0 30px #00ffff;
         }
 
         .hub-subtitle {
-            color: #a29bfe; font-size: 1.3rem; margin-bottom: 3rem;
+            color: #a29bfe; font-size: 1.3rem; margin-bottom: 5rem;
             letter-spacing: 2px;
         }
 
         .hub-nav-tabs {
-            display: flex; gap: 2rem; opacity: 1;
-            pointer-events: auto; z-index: 5; flex-wrap: wrap;
-            justify-content: center;
+            display: flex; gap: 2rem; flex-wrap: wrap;
+            justify-content: center; width: 90%;
+            margin-bottom: 10rem; /* Space before the footer section */
         }
 
         .hub-nav-tab {
@@ -42,7 +63,7 @@
             color: white; padding: 1.5rem 2.5rem; border-radius: 50px;
             cursor: pointer; transition: all 0.3s ease;
             font-size: 1.1rem; font-weight: 600;
-            pointer-events: auto; letter-spacing: 2px;
+            letter-spacing: 2px;
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
         }
 
@@ -54,20 +75,14 @@
         }
 
         .home-btn {
-            position: absolute; bottom: 30px; left: 50%;
-            transform: translateX(-50%);
             background: linear-gradient(135deg, #00ffff, #0099cc);
             color: #0a0e27; border: none; padding: 0.75rem 2rem;
             border-radius: 25px; cursor: pointer; font-weight: bold;
             transition: all 0.3s ease; letter-spacing: 1px;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+            margin-bottom: 5rem;
         }
 
-        .home-btn:hover {
-            transform: translateX(-50%) scale(1.1);
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
-        }
-        /* Music Toggle Button */
+        /* Music Toggle - Stay fixed to the screen */
         .music-toggle {
             position: fixed; bottom: 30px; right: 30px;
             width: 50px; height: 50px;
@@ -76,80 +91,37 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            cursor: pointer; z-index: 100; transition: 0.3s;
+            cursor: pointer; z-index: 100;
         }
-        .music-toggle:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.1); }
-        /* Footer Styling aligned with Music Button */
+
         .footer-info {
-            position: fixed;
-            bottom: 30px; /* Same level as music button */
-            left: 70%;
-            transform: translateX(-50%);
+            width: 100%;
             text-align: center;
             color: rgba(255, 255, 255, 0.5);
             font-size: 0.75rem;
-            z-index: 5;
+            padding: 2rem 0;
             letter-spacing: 1px;
-            line-height: 1.4;
-            pointer-events: none;
+            background: rgba(0,0,0,0.3);
         }
-        .version-tag { color: #a29bfe; font-weight: bold; display: block; }
-        .footer-info span { display: block; }
-        /* Responsive Adjustments */
+
+        .version-tag { color: #a29bfe; font-weight: bold; }
+
         @media (max-width: 768px) {
-            /* Scale down headers */
-            h1 { font-size: 1.8rem !important; }
-            #adventure-text h1 { 
-                font-size: 2.2rem !important; 
-                letter-spacing: 4px !important; 
-            }
-            
-            /* Adjust the glass card width for mobile */
-            .glass-card {
-                padding: 2rem 1.5rem;
-                width: 85%;
-            }
-
-            /* Stack navigation buttons vertically on small screens */
-            .nav-tabs {
-                flex-direction: column;
-                gap: 1rem;
-                width: 100%;
-                align-items: center;
-            }
-
-            .nav-tab {
-                width: 100%;
-                max-width: 200px;
-                padding: 0.8rem 1rem;
-                text-align: center;
-            }
-
-            /* Adjust footer and music button for mobile spacing */
-            .music-toggle {
-                bottom: 20px;
-                right: 20px;
-                width: 45px;
-                height: 45px;
-            }
-
-            .footer-info {
-                bottom: 15px;
-                font-size: 0.65rem;
-                width: 90%;
-            }
+            .hub-title { font-size: 2rem; }
+            .hub-nav-tabs { flex-direction: column; align-items: center; }
+            .hub-nav-tab { width: 80%; text-align: center; }
         }
-
     </style>
 </head>
 <body>
-     <audio id="bg-audio" loop>
+    <audio id="bg-audio" loop>
         <source src="bgmusic.mp3" type="audio/mpeg">
     </audio>
 
     <div class="music-toggle" onclick="toggleMusic()" id="music-btn">
         <span id="music-icon">▶</span>
     </div>
+
     <div id="hub-content">
         <h1 class="hub-title">Anonymous Agents</h1>
         <p class="hub-subtitle">Select Your Next Destination</p>
@@ -160,16 +132,17 @@
             <div class="hub-nav-tab" onclick="navigateTo('games.html')">🎮 GAMES</div>
         </div>
 
-        <button class="home-btn" onclick="navigateTo('index.html')">← BACK TO VOID
-        </button>
-    </div>
-    <div class="footer-info">
-        <span class="version-tag">V0.001</span>
-        <span>Developed by Haibaan & Rayyan</span>
-        <span>Copyright © Anonymous Agents. All rights reserved.</span>
+        <button class="home-btn" onclick="navigateTo('home.html')">← BACK TO VOID</button>
+
+        <div class="footer-info">
+            <span class="version-tag">V0.001</span><br>
+            <span>Developed by Haibaan & Rayyan</span><br>
+            <span>Copyright © Anonymous Agents. All rights reserved.</span>
+        </div>
     </div>
 
     <script>
+        // ... (Keep your existing Three.js init and animate code here)
         let scene, camera, renderer, starGeo, stars, starMaterial;
         let speed = 0.2;
         let nebulaParticles;
@@ -193,16 +166,11 @@
             }
             starGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
             
-            starMaterial = new THREE.PointsMaterial({
-                color: 0xffffff,
-                size: 0.7,
-                transparent: true
-            });
-
+            starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7, transparent: true });
             stars = new THREE.Points(starGeo, starMaterial);
             scene.add(stars);
 
-            // Create Nebula
+            // Nebula
             let nebulaGeo = new THREE.BufferGeometry();
             let nebPositions = [];
             let nebColors = [];
@@ -210,70 +178,41 @@
                 nebPositions.push(Math.random() * 1000 - 500);
                 nebPositions.push(Math.random() * 1000 - 500);
                 nebPositions.push(Math.random() * 1000 - 500);
-                
                 let color = new THREE.Color();
                 color.setHSL(Math.random() * 0.2 + 0.6, 1, 0.5);
                 nebColors.push(color.r, color.g, color.b);
             }
             nebulaGeo.setAttribute('position', new THREE.Float32BufferAttribute(nebPositions, 3));
             nebulaGeo.setAttribute('color', new THREE.Float32BufferAttribute(nebColors, 3));
-            
-            let nebMat = new THREE.PointsMaterial({
-                size: 2,
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.8
-            });
+            let nebMat = new THREE.PointsMaterial({ size: 2, vertexColors: true, transparent: true, opacity: 0.8 });
             nebulaParticles = new THREE.Points(nebulaGeo, nebMat);
             scene.add(nebulaParticles);
 
-            scene.fog = new THREE.FogExp2(0x050510, 0.002);
-
             animate();
-        }
-        // Music Logic
-        const audio = document.getElementById('bg-audio');
-        const musicIcon = document.getElementById('music-icon');
-        
-        function toggleMusic() {
-            if (audio.paused) {
-                audio.play();
-                musicIcon.innerText = '⏸';
-            } else {
-                audio.pause();
-                musicIcon.innerText = '▶';
-            }
         }
 
         function animate() {
             let positions = starGeo.attributes.position.array;
-            
             for(let i=0; i<positions.length; i+=3) {
                 positions[i+1] -= speed;
-                if (positions[i+1] < -300) {
-                    positions[i+1] = 300;
-                }
+                if (positions[i+1] < -300) positions[i+1] = 300;
             }
-            
             starGeo.attributes.position.needsUpdate = true;
             stars.rotation.y += 0.002;
-
-            if (nebulaParticles) {
-                nebulaParticles.rotation.y += 0.001;
-            }
-
+            if (nebulaParticles) nebulaParticles.rotation.y += 0.001;
             renderer.render(scene, camera);
             requestAnimationFrame(animate);
         }
 
-        function navigateTo(page) {
-            window.location.href = page;
+        // Music Logic
+        const audio = document.getElementById('bg-audio');
+        const musicIcon = document.getElementById('music-icon');
+        function toggleMusic() {
+            if (audio.paused) { audio.play(); musicIcon.innerText = '⏸'; }
+            else { audio.pause(); musicIcon.innerText = '▶'; }
         }
 
-        function goHome() {
-            window.location.href = 'home.html';
-        }
-
+        function navigateTo(page) { window.location.href = page; }
         init();
 
         window.addEventListener('resize', () => {
@@ -284,4 +223,3 @@
     </script>
 </body>
 </html>
-
