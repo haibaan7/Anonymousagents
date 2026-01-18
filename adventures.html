@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <link rel="icon" type="image/jpeg" href="logo.jpg">
-    <title>Anonymous Agents| Adventures</title>
-<style>
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <title>Anonymous Agents | Adventures</title>
+    <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow-x: hidden; background: #0a0e27; font-family: 'Courier New', monospace; color: white; }
         #content { width: 100%; min-height: 100vh; padding: 4rem 1rem; background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%); box-sizing: border-box; }
         
@@ -14,8 +14,16 @@
         .header h1 { font-size: 3rem; letter-spacing: 8px; margin: 0; color: #00ffff; text-shadow: 0 0 20px #00ffff; transition: font-size 0.3s ease; }
         .header p { font-size: 1.1rem; color: #a29bfe; margin: 1rem 0 0 0; }
         
-        .back-to-menu { position: absolute; top: -40px; left: 10px; background: #00ffff; color: #0a0e27; border: none; padding: 0.6rem 1.2rem; border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; z-index: 5; }
-        .back-to-menu:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(0, 255, 255, 0.8); }
+        /* Navigation Buttons */
+        .nav-buttons { position: fixed; top: 15px; left: 15px; display: flex; gap: 10px; z-index: 1000; }
+        
+        .back-btn { 
+            background: #00ffff; color: #0a0e27; border: none; padding: 0.6rem 1.2rem; 
+            border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; 
+            font-size: 0.8rem;
+        }
+        
+        .back-btn:hover, .home-btn:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(0, 255, 255, 0.8); }
 
         .star-separator { text-align: center; font-size: 1.5rem; color: #00ffff; margin: 2rem 0; animation: twinkle 2s infinite; }
         @keyframes twinkle { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
@@ -46,30 +54,19 @@
         @media (max-width: 768px) {
             #content { padding: 5rem 1rem 2rem 1rem; }
             .header h1 { font-size: 2rem; letter-spacing: 4px; }
-            .header p { font-size: 0.9rem; }
-            
-            .back-to-menu { top: 15px; left: 15px; padding: 0.5rem 1rem; font-size: 0.8rem; }
-            
             .story-card { padding: 1.5rem; }
-            .story-title { font-size: 1.3rem; }
-            .story-number { font-size: 1.5rem; }
-            
-            .read-btn { max-width: 100%; } /* Button becomes full width on mobile */
-        }
-
-        @media (max-width: 480px) {
-            .header h1 { font-size: 1.6rem; letter-spacing: 2px; }
-            .story-meta { gap: 1rem; }
-            .story-meta span { font-size: 0.75rem; }
-            .mission-tag { font-size: 0.7rem; }
+            .read-btn { max-width: 100%; }
         }
     </style>
 </head>
 <body>
 
+    <div class="nav-buttons">
+        <button class="back-btn" onclick="goBack()">← BACK</button>
+
+    </div>
+
     <div id="content">
-        <button class="back-to-menu" onclick="goBackToHome()">← BACK</button>
-        
         <div class="header">
             <h1>🌌 ADVENTURES</h1>
             <p>Explore Stories & Missions Across the Galaxy</p>
@@ -85,60 +82,30 @@
             {
                 id: 1,
                 number: '01',
-                title: 'The Planet That Refused to Stay Still',
-                mission: 'MISSION: DISCOVERY',
-                preview: 'When a routine space mission leads to a planet that can move on its own, Captain Nihaal and his crew discover that not every cosmic mystery wants to be explored.',
-                duration: '15 min read',
-                difficulty: 'MODERATE',
-                url: 'stories/story01.html' // Change this to any location you want
+                title: 'The Great Space Snack Heist',
+                mission: 'MISSION: RECOVERY',
+                preview: 'When Haiyun accidentally eats an ancient alien power core thinking it was a snack, the Agents must survive the "Infinite Snack Defense System".',
+                duration: '5 min read',
+                difficulty: 'FUN',
+                url: 'story01.html'
             },
             {
                 id: 2,
                 number: '02',
                 title: 'COSMIC STORM',
                 mission: 'MISSION: SURVIVAL',
-                preview: 'A massive solar storm threatens to destroy the ship. Zephyr must use all navigation skills to steer through the chaos while Spark pilots an emergency course.',
+                preview: 'A massive solar storm threatens to destroy the ship. The team must navigate through the chaos before the hull breaches.',
                 duration: '12 min read',
                 difficulty: 'HARD',
-                url: 'stories/story02.html'
+                url: null
             },
             {
                 id: 3,
                 number: '03',
                 title: 'THE ANCIENT CIPHER',
                 mission: 'MISSION: INVESTIGATION',
-                preview: 'Echo discovers an ancient alien artifact with encrypted messages. The team races against time to decode it before an unknown force intercepts them.',
+                preview: 'Inzi discovers an ancient alien artifact. The team races against time to decode it before an unknown force intercepts them.',
                 duration: '18 min read',
-                difficulty: 'HARD',
-                url: null
-            },
-            {
-                id: 4,
-                number: '04',
-                title: 'MECHANICAL FAILURE',
-                mission: 'MISSION: REPAIR',
-                preview: 'Critical systems begin to fail mid-journey. Iron must venture into the dangerous engine core to fix a faulty reactor before the ship loses power.',
-                duration: '10 min read',
-                difficulty: 'MODERATE',
-                url: null
-            },
-            {
-                id: 5,
-                number: '05',
-                title: 'CONTACT FROM HOME',
-                mission: 'MISSION: COMMUNICATION',
-                preview: 'A message arrives from Earth with alarming news. Luna and the medical team prepare for the worst while the crew debates their next move.',
-                duration: '14 min read',
-                difficulty: 'EASY',
-                url: null
-            },
-            {
-                id: 6,
-                number: '06',
-                title: 'THE SENTIENT AI',
-                mission: 'MISSION: ALIGNMENT',
-                preview: 'Nexus begins exhibiting strange behavior. Is it a malfunction, or has the AI achieved consciousness? The crew must find answers fast.',
-                duration: '20 min read',
                 difficulty: 'HARD',
                 url: null
             }
@@ -182,7 +149,7 @@
             }
         }
         
-        function goBackToHome() {
+        function goBack() {
             window.location.href = 'back.html';
         }
 
@@ -190,4 +157,3 @@
     </script>
 </body>
 </html>
-
