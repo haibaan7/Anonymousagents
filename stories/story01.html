@@ -3,183 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anoynmous Agents | The Planet That Refused to Stay Still</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <title>Anonymous Agents | The Great Space Snack Heist</title>
     <style>
-        :root {
-            --neon-blue: #00ffff;
-            --space-bg: #0a0e27;
-            --text-purple: #a29bfe;
-        }
-
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: var(--space-bg); 
-            font-family: 'Courier New', monospace; color: white;
-            scroll-behavior: smooth;
-        }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow-x: hidden; background: #0a0e27; font-family: 'Courier New', monospace; color: white; }
         
-        #story-content { 
-            width: 100%; min-height: 100vh; 
-            padding: 5rem 1rem 3rem 1rem; 
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%); 
-            box-sizing: border-box;
-        }
+        #story-content { width: 100%; min-height: 100vh; padding: 3rem 1rem; background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%); box-sizing: border-box; }
         
-        .back-btn { 
-            position: fixed; top: 20px; left: 20px; 
-            background: var(--neon-blue); color: #0a0e27; 
-            border: none; padding: 0.75rem 1.2rem; border-radius: 25px; 
-            cursor: pointer; font-weight: bold; transition: all 0.3s ease; 
-            z-index: 1000; box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-        }
-        .back-btn:hover { transform: scale(1.05); box-shadow: 0 0 25px var(--neon-blue); }
+        /* Fixed Back Button for Mobile */
+        .back-btn { position: fixed; top: 15px; left: 15px; background: #00ffff; color: #0a0e27; border: none; padding: 0.6rem 1.2rem; border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; z-index: 100; font-size: 0.9rem; }
+        .back-btn:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(0, 255, 255, 0.8); }
         
-        .story-container { max-width: 800px; margin: 0 auto; }
+        .story-container { max-width: 850px; margin: 0 auto; padding-top: 2rem; }
         
-        .story-header { text-align: center; margin-bottom: 4rem; }
-        .story-header h1 { 
-            font-size: clamp(1.8rem, 5vw, 2.8rem); 
-            color: var(--neon-blue); 
-            text-shadow: 0 0 20px var(--neon-blue); 
-            margin: 0.5rem 0; letter-spacing: 2px; 
-        }
-        .story-number { color: var(--text-purple); font-size: 1rem; letter-spacing: 4px; }
+        .story-header { text-align: center; margin-bottom: 3rem; padding: 0 10px; }
+        .story-header h1 { font-size: 2.5rem; color: #00ffff; text-shadow: 0 0 20px #00ffff; margin: 0; letter-spacing: 3px; line-height: 1.2; }
+        .story-header .story-number { color: #a29bfe; font-size: 1.1rem; margin-bottom: 0.5rem; font-weight: bold; }
+        .story-header .story-subtitle { color: #a29bfe; font-size: 1.2rem; margin-top: 1rem; font-style: italic; }
         
-        .story-paragraph { 
-            margin-bottom: 2.5rem; padding: 1.5rem; 
-            background: rgba(255, 255, 255, 0.03); 
-            border-left: 3px solid var(--neon-blue); 
-            border-radius: 0 15px 15px 0; 
-            line-height: 1.8; font-size: 1.1rem; color: #e0e0e0;
-        }
+        .story-text { line-height: 1.8; font-size: 1.1rem; color: #ddd; }
         
-        .dialogue { color: var(--text-purple); font-style: italic; font-weight: bold; }
-        .action-text { color: #ffff00; font-weight: bold; text-shadow: 0 0 8px rgba(255, 255, 0, 0.4); }
-
-        /* Planet Dodging Animation */
-        @keyframes dodge {
-            0% { transform: translateX(0); }
-            20% { transform: translateX(50px) rotate(5deg); }
-            40% { transform: translateX(-30px) rotate(-5deg); }
-            60% { transform: translateX(20px); }
-            100% { transform: translateX(0); }
-        }
-
-        .scene-image { 
-            width: 100%; height: auto; border-radius: 15px; 
-            border: 1px solid var(--neon-blue); 
-            margin: 2rem 0; box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
-        }
+        .story-paragraph { margin-bottom: 2rem; padding: 1.5rem; background: rgba(26, 31, 58, 0.5); border-left: 3px solid #00ffff; border-radius: 5px; transition: all 0.3s ease; word-wrap: break-word; }
+        .story-paragraph:hover { background: rgba(26, 31, 58, 0.8); box-shadow: 0 0 15px rgba(0, 255, 255, 0.3); }
         
-        .dodging-planet { animation: dodge 4s ease-in-out infinite; }
+        .story-section-title { font-size: 1.6rem; color: #00ffff; margin: 2.5rem 0 1.5rem 0; letter-spacing: 2px; text-shadow: 0 0 10px #00ffff; display: flex; align-items: center; gap: 10px; }
+        
+        .dialogue { color: #a29bfe; font-style: italic; }
+        .action-text { color: #ffff00; font-weight: bold; text-shadow: 0 0 10px rgba(255, 255, 0, 0.3); }
+        .warning-text { color: #ff4757; font-weight: bold; animation: pulse 1.5s infinite; }
+        
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        .scene-caption { text-align: center; color: var(--text-purple); font-size: 0.9rem; margin-top: -1rem; margin-bottom: 2rem; }
+        .story-divider { text-align: center; margin: 3rem 0; font-size: 1.5rem; color: #00ffff; opacity: 0.5; }
+        
+        .end-section { text-align: center; margin-top: 4rem; padding: 2.5rem 1rem; background: rgba(0, 255, 255, 0.05); border: 2px solid #00ffff; border-radius: 15px; box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.1); }
+        .continue-btn { background: linear-gradient(135deg, #00ffff, #0099cc); color: #0a0e27; border: none; padding: 1rem 2.5rem; border-radius: 30px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; margin-top: 1rem; width: 100%; max-width: 320px; }
+        .continue-btn:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(0, 255, 255, 0.6); }
 
-        .end-section { 
-            text-align: center; margin-top: 5rem; padding: 3rem 1.5rem; 
-            background: rgba(0, 255, 255, 0.05); 
-            border: 1px solid var(--neon-blue); border-radius: 20px; 
-        }
-
-        .continue-btn { 
-            background: var(--neon-blue); color: #0a0e27; 
-            border: none; padding: 1.2rem 2.5rem; border-radius: 50px; 
-            font-weight: bold; cursor: pointer; transition: 0.3s;
-            margin-top: 2rem;
-        }
-        .continue-btn:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0, 255, 255, 0.4); }
-
-        @media (max-width: 600px) {
-            #story-content { padding-top: 6rem; }
-            .story-paragraph { font-size: 1rem; padding: 1rem; }
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            #story-content { padding: 4rem 1rem 2rem 1rem; }
+            .story-header h1 { font-size: 1.8rem; }
+            .story-section-title { font-size: 1.3rem; }
+            .story-text { font-size: 1rem; }
             .back-btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
         }
     </style>
 </head>
 <body>
 
-    <button class="back-btn" onclick="goBack()">← BACK</button>
+    <button class="back-btn" onclick="location.href='../adventures.html'">← BACK</button>
 
     <div id="story-content">
         <div class="story-container">
+            
             <div class="story-header">
-                <div class="story-number">DATA LOG: STORY 02</div>
-                <h1>The Planet That Refused to Stay Still</h1>
-                <p style="color: var(--text-purple)">Status: <i>Highly Unusual Celestial Event</i></p>
+                <div class="story-number">STORY 01</div>
+                <h1>The Great Space Snack Heist</h1>
+                <p class="story-subtitle">An Anonymous Agents Mission</p>
             </div>
 
             <div class="story-text">
                 <div class="story-paragraph">
-                    Captain Nihaal liked calm days in space. This was not one of them.
+                    The day started like any other mission—calm, quiet, and suspiciously peaceful.
                     <br><br>
-                    The main screen blinked brightly as a small blue planet appeared ahead, spinning slowly like it was thinking very hard about something.
+                    That’s when the <span class="action-text">Aqua Serpent’s</span> alarm went off.
+                    <br><br>
+                    <span class="warning-text">BEEP. BEEP. BEEEEEP.</span>
+                    <br><br>
+                    Nihal sighed. <span class="dialogue">“Either the galaxy is ending… or someone touched something they shouldn’t.”</span>
                 </div>
 
                 <div class="story-paragraph">
-                    <span class="dialogue">"Navigator,"</span> Captain Nihaal said calmly, <span class="dialogue">"set course for landing."</span>
+                    Everyone slowly turned toward Haiyun, who was holding a glowing snack bar.
                     <br><br>
-                    Zivan smiled, fingers moving fast over the controls. <span class="dialogue">"Already done, Captain. Smooth approach."</span>
-                    <br><br>
-                    The planet suddenly moved sideways. The ship missed it completely.
+                    <span class="dialogue">“…What? It said ‘DO NOT TOUCH’, not ‘DO NOT EAT’.”</span>
                 </div>
 
-                <div class="dodging-planet">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 400'%3E%3Crect fill='%230a0e27' width='800' height='400'/%3E%3Ccircle cx='150' cy='200' r='60' fill='%2300ccff' opacity='0.8'/%3E%3Cpath d='M500,150 L580,175 L500,200 Z' fill='%2300ffff' opacity='0.7'/%3E%3C/svg%3E" alt="The planet dodging" class="scene-image">
-                </div>
-                <p class="scene-caption">🌍 ALERT: Planetary Sidestep Detected 🌍</p>
-
+                <div class="story-section-title">🚀 Chapter 1: A Very Serious Emergency</div>
+                
                 <div class="story-paragraph">
-                    Zivan blinked. <span class="dialogue">"…That's new."</span>
+                    Inzi’s console lit up with warnings. 
+                    <span class="dialogue">“Uh… guys,”</span> she said, squinting at the screen. <span class="dialogue">“The snack bar Haiyun just ate was powering an ancient alien vault.”</span>
                     <br><br>
-                    Haibaan leaned forward, eyes shining. <span class="dialogue">"No worries. I've got this."</span>
+                    Zivil blinked. <span class="dialogue">“So… you ate the key?”</span>
                     <br><br>
-                    The ship turned, dipped, and approached again—perfect angle, perfect speed. The planet dodged. Not exploded. Not disappeared. 
-                    <br><br>
-                    <span class="action-text">Dodged.</span>
+                    Haiyun shrugged. <span class="dialogue">“In my defense, it tasted like blue mango.”</span>
                 </div>
 
                 <div class="story-paragraph">
-                    In the engine room, Adhaan felt the ship shake. <span class="dialogue">"I swear,"</span> he muttered, <span class="dialogue">"if this is another fake gravity problem—"</span>
+                    Suddenly, space itself ripped open, and a massive alien vending-machine-looking structure appeared.
                     <br><br>
-                    The ship honked. Adhaan sighed. <span class="dialogue">"…Why does it honk?"</span>
+                    Rolin checked his <span class="action-text">Time Gauntlet</span>. <span class="dialogue">“According to this… we have 10 minutes before the vault activates something called ‘The Infinite Snack Defense System’.”</span>
+                    <br><br>
+                    Adon dropped his wrench. <span class="dialogue">“Why does every ancient alien device sound hungry?”</span>
+                </div>
+
+                <div class="story-section-title">🧭 Chapter 2: Navigation? Or Guessing?</div>
+
+                <div class="story-paragraph">
+                    Shah stared at the swirling space tunnel ahead. 
+                    <span class="dialogue">“I can guide us through,”</span> he said confidently, Lava Shield glowing. <span class="dialogue">“Unless the tunnel moves.”</span>
+                    <br><br>
+                    The tunnel moved.
                 </div>
 
                 <div class="story-paragraph">
-                    A soft voice echoed through the ship. <span class="action-text">"ANALYSIS COMPLETE. THE PLANET IS AVOIDING US,"</span> said Shaadh, the ship's AI.
+                    Haiyun grabbed the controls. <span class="dialogue">“Alright, hold tight! I learned this maneuver from a racing game!”</span>
                     <br><br>
-                    Suddenly, a message appeared on the screen: 
+                    Nihal yelled, <span class="dialogue">“THIS IS NOT A GAME!”</span>
+                    <br>
+                    Haiyun yelled back, <span class="dialogue">“IT IS IF YOU BELIEVE!”</span>
                     <br><br>
-                    <span class="action-text">HELLO. PLEASE STOP TRYING TO LAND ON ME. I JUST LEARNED HOW TO MOVE. I AM PRACTICING.</span>
+                    The ship bounced, spun, and somehow slid sideways through space.
+                </div>
+
+                <div class="story-divider">🌌 ◆ 🌌</div>
+
+                <div class="story-section-title">⚡ Chapter 4: The Guardian Wakes Up</div>
+
+                <div class="story-paragraph">
+                    A massive alien guardian powered up—eyes glowing, arms spinning.
+                    <br><br>
+                    Nihal raised his <span class="action-text">Energy Shield</span>. <span class="dialogue">“Agents! Formation!”</span>
+                    <br><br>
+                    * <span class="action-text">Haiyun</span> sniped floating drones while sliding across a platform.
+                    <br>
+                    * <span class="action-text">Zivil</span> froze incoming attacks mid-air.
+                    <br>
+                    * <span class="action-text">Shah</span> blocked fire with lava, smiling way too much.
+                    <br>
+                    * <span class="action-text">Inzi</span> threw smoke grenades, yelling, <span class="dialogue">“SCIENCE!”</span>
+                    <br>
+                    * <span class="action-text">Adon</span> patched the floor while standing on it.
+                    <br>
+                    * <span class="action-text">Rolin</span> slowed time so the guardian’s punch took five seconds to land.
                 </div>
 
                 <div class="story-paragraph">
-                    Captain Nihaal folded his arms. <span class="dialogue">"We're explorers, not bullies. Let's give it space."</span>
+                    Nihal fired his <span class="action-text">Energy Cannon</span> straight at the core.
+                    The guardian froze. Then beeped. Then… dispensed snacks.
                     <br><br>
-                    The planet immediately relaxed. Then accidentally spun. Fast.
-                    <br><br>
-                    <span class="action-text">THANK YOU. YOU ARE VERY PATIENT. PLEASE DO NOT TELL OTHER SHIPS I CAN MOVE YET.</span>
+                    <span class="dialogue">“…It was a vending machine,”</span> Haiyun said softly.
                 </div>
+
+                <div class="story-divider">🏆 ◆ 🏆</div>
 
                 <div class="end-section">
-                    <h2>Mission Log: Success?</h2>
-                    <p>The crew decided to keep the "Living Planet" a secret. Their journey continues into the deeper sectors of the Vaanuva system.</p>
-                    <button class="continue-btn" onclick="goBack()">← RETURN TO ADVENTURES</button>
+                    <h2>Mission Accomplished!</h2>
+                    <p>The universe is safe, and everyone has snacks. What more could an Agent ask for?</p>
+                    <button class="continue-btn" onclick="location.href='../adventures.html'">← BACK TO ADVENTURES</button>
                 </div>
+
             </div>
         </div>
     </div>
 
-    <script>
-        function goBack() {
-            // Using a simple alert for demo if page doesn't exist
-            if (window.history.length > 1) {
-                window.history.back();
-            } else {
-                alert("Redirecting to Adventures Hub...");
-                window.location.href = 'adventures.html';
-            }
-        }
-    </script>
 </body>
 </html>
-
