@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anonymous Agents</title>
+    <title>Anonymous Agents | Space Exploration</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Inter', sans-serif; }
@@ -14,127 +16,92 @@
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
-            z-index: 50; transition: opacity 1s ease, transform 1.5s ease;
-            padding: 20px;
-            box-sizing: border-box;
+            z-index: 10; transition: opacity 1s ease, transform 1.5s ease;
         }
 
         .glass-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: clamp(1.5rem, 5vw, 3rem); 
-            border-radius: 20px; 
-            text-align: center; 
-            color: white;
-            max-width: 600px;
-            width: 100%;
-        }
-
-        h1 {
-            font-size: clamp(1.5rem, 6vw, 3rem);
-            margin-bottom: 1.5rem;
+            padding: 3rem; border-radius: 20px; text-align: center; color: white;
         }
 
         .cta-button {
-            display: inline-block; 
-            padding: 15px 30px; 
-            background: white;
-            color: black; 
-            text-decoration: none; 
-            border-radius: 50px;
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: 0.3s;
-            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            display: inline-block; padding: 15px 40px; background: white;
+            color: black; text-decoration: none; border-radius: 50px;
+            font-weight: bold; cursor: pointer; transition: 0.3s;
         }
 
-        .cta-button:hover { transform: scale(1.05); box-shadow: 0 0 20px #fff; }
+        .cta-button:hover { transform: scale(1.1); box-shadow: 0 0 20px #fff; }
 
-        /* Final Welcome Text - FIXED Z-INDEX AND POINTER EVENTS */
+
+        /* Final Welcome Text (Hidden initially) */
         #adventure-text {
-            position: absolute; 
-            top: 50%; left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            color: white; 
-            text-align: center; 
-            opacity: 0;
-            pointer-events: none; /* Block clicks until warp is done */
-            z-index: 100; /* Ensure this is above EVERYTHING */
+            color: white; text-align: center; opacity: 0;
+            pointer-events: none; z-index: 5;
             transition: opacity 2s ease;
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: clamp(1.5rem, 5vw, 3rem);
-            width: 90%;
+            display: flex; flex-direction: column; align-items: center; gap: 3rem;
         }
 
-        .adventure-title {
-            font-size: clamp(2rem, 8vw, 4rem); 
-            letter-spacing: clamp(2px, 2vw, 10px);
-            margin: 0;
-        }
-
-        .adventure-sub {
-            font-size: clamp(1rem, 3vw, 1.5rem); 
-            color: #a29bfe;
-            margin: 0;
-        }
-
+        /* Navigation Tabs */
         .nav-tabs {
-            display: flex; 
-            gap: 1rem; 
-            flex-wrap: wrap;
-            justify-content: center;
+            display: flex; gap: 2rem; opacity: 1;
+            pointer-events: auto; z-index: 5;
         }
 
         .nav-tab {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white; 
-            padding: clamp(0.6rem, 2vw, 1rem) clamp(1rem, 3vw, 2rem); 
-            border-radius: 50px;
-            cursor: pointer; 
-            transition: all 0.3s ease;
-            font-size: clamp(0.8rem, 2vw, 1rem); 
-            font-weight: 500;
-            white-space: nowrap;
-            z-index: 101; /* Extra layer of click protection */
+            color: white; padding: 1rem 2rem; border-radius: 50px;
+            cursor: pointer; transition: all 0.3s ease;
+            font-size: 1rem; font-weight: 500;
+            pointer-events: auto;
         }
 
         .nav-tab:hover {
-            background: white;
-            color: black;
-            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(162, 155, 254, 0.5);
         }
 
-        @media (max-width: 600px) {
-            .nav-tabs {
-                flex-direction: column; 
-                width: 100%;
-                max-width: 250px;
-            }
-            .nav-tab {
-                width: 100%;
-                text-align: center;
-            }
+        /* Music Toggle Button */
+        .music-toggle {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 50px; height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 100; transition: 0.3s;
         }
+        .music-toggle:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.1); }
     </style>
 </head>
 <body>
 
+    <audio id="bg-audio" loop>
+        <source src="bgmusic.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-toggle" onclick="toggleMusic()" id="music-btn">
+        <span id="music-icon">▶</span>
+    </div>
+
     <div id="ui-layer">
         <div class="glass-card">
-            <h1>Welcome to Anonymous Agents</h1>
-            <div class="cta-button" onclick="startWarp()">Explore Anonymous Agents</div>
+            <h1>Welcome to Anoymous Agents</h1>
+            <div class="cta-button" onclick="startWarp()">Click here to explore Anoymous Agents</div>
         </div>
     </div>
 
     <div id="adventure-text">
-        <h1 class="adventure-title">ADVENTURE SPACE</h1>
-        <p class="adventure-sub">Unlimited Possibilities Await</p>
+        <h1 style="font-size: 4rem; letter-spacing: 10px;">ADVENTURE SPACE</h1>
+        <p style="font-size: 1.5rem; color: #a29bfe;">Unlimited Possibilities Await</p>
         
         <div class="nav-tabs">
             <div class="nav-tab" onclick="navigateTo('spaceship.html')">🚀 Spaceships</div>
@@ -158,10 +125,10 @@
             camera.rotation.x = Math.PI/2;
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
+            // Create Starfield
             starGeo = new THREE.BufferGeometry();
             let positions = [];
             for(let i=0; i<6000; i++) {
@@ -183,15 +150,27 @@
             animate();
         }
 
+        // Music Logic
+        const audio = document.getElementById('bg-audio');
+        const musicIcon = document.getElementById('music-icon');
+        
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                musicIcon.innerText = '⏸';
+            } else {
+                audio.pause();
+                musicIcon.innerText = '▶';
+            }
+        }
+
         function startWarp() {
             isWarping = true;
-            const ui = document.getElementById('ui-layer');
-            ui.style.opacity = '0';
-            ui.style.transform = 'scale(2)';
-            ui.style.pointerEvents = 'none'; // Ensure initial UI doesn't block final UI
+            document.getElementById('ui-layer').style.opacity = '0';
+            document.getElementById('ui-layer').style.transform = 'scale(2)';
             
             setTimeout(() => {
-                ui.style.display = 'none';
+                document.getElementById('ui-layer').style.display = 'none';
                 createAdventureWorld();
             }, 2000);
         }
@@ -223,20 +202,16 @@
             nebulaParticles = new THREE.Points(nebulaGeo, nebMat);
             scene.add(nebulaParticles);
 
-            // GIVING THE UI ACCESS TO CLICKS
             setTimeout(() => {
-                const advText = document.getElementById('adventure-text');
-                advText.style.opacity = '1';
-                advText.style.pointerEvents = 'auto'; // CRITICAL: Unlock clicking
+                document.getElementById('adventure-text').style.opacity = '1';
+                document.getElementById('adventure-text').style.pointerEvents = 'auto';
                 isWarping = false;
                 speed = 0.2;
             }, 100);
         }
 
         function navigateTo(page) {
-            // Test if click is working
-            alert("Entering " + page); 
-            window.location.href = page; 
+            window.location.href = page;
         }
 
         function animate() {
