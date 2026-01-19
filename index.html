@@ -232,7 +232,12 @@
             }
         }
 
-        function startWarp() {
+       function startWarp() {
+            // This starts the audio immediately upon clicking the explore button
+            const audio = document.getElementById('bg-audio');
+            audio.play(); 
+            document.getElementById('music-icon').innerText = '⏸';
+
             isWarping = true;
             document.getElementById('ui-layer').style.opacity = '0';
             document.getElementById('ui-layer').style.transform = 'scale(2)';
@@ -241,7 +246,7 @@
                 document.getElementById('ui-layer').style.display = 'none';
                 createAdventureWorld();
             }, 2000);
-        }
+}
 
         function createAdventureWorld() {
             scene.fog = new THREE.FogExp2(0x050510, 0.002);
@@ -308,6 +313,14 @@
             requestAnimationFrame(animate);
         }
 
+        // This listens for the very first click anywhere on the page
+            window.addEventListener('click', () => {
+                const audio = document.getElementById('bg-audio');
+                if (audio.paused) {
+                    audio.play();
+                    document.getElementById('music-icon').innerText = '⏸';
+                }
+            }, { once: true }); // { once: true } ensures this only runs on the first click
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
