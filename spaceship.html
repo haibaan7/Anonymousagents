@@ -150,37 +150,44 @@
     { 
         id: 1, name: 'Haiyun', role: 'Pilot', weapons: 'Sword & Sniper', gadgets: 'Water Grenade', element: 'Water', image: 'Haibaan.png',
         pcPos: { top: '55%', left: '70%' }, 
-        mobilePos: { top: '80%', left: '25%' } 
+        mobilePos: { top: '80%', left: '25%' },
+        color: '#0000ff' // Dark Blue
     },
     { 
         id: 2, name: 'Nihal', role: 'Leader', weapons: 'Shield', gadgets: 'Energy Cannon', element: 'Energy', image: 'Nihaal.png',
         pcPos: { top: '50%', left: '60%' }, 
-        mobilePos: { top: '60%', left: '90%' }
+        mobilePos: { top: '60%', left: '90%' },
+        color: '#00ff00' // Green
     },
     { 
         id: 3, name: 'Zivil', role: 'Fighter', weapons: 'Staff', gadgets: 'Ice Granade', element: 'Ice', image: 'Zivan.png',
         pcPos: { top: '50%', left: '35%' }, 
-        mobilePos: { top: '75%', left: '10%' }
+        mobilePos: { top: '75%', left: '10%' },
+        color: '#add8e6' // Light Blue
     },
     { 
         id: 4, name: 'Adhaan', role: 'Engineer', weapons: 'Pistol', gadgets: 'Earth Shield', element: 'Earth', image: 'Adhaan.png',
         pcPos: { top: '60%', left: '80%' }, 
-        mobilePos: { top: '60%', left: '10%' }
+        mobilePos: { top: '60%', left: '10%' },
+        color: '#ff8c00' // Orange
     },
     { 
         id: 5, name: 'Inzi', role: 'Scientist', weapons: 'Dagger', gadgets: 'Smoke Granades', element: 'Lightning', image: 'Izaan.png',
         pcPos: { top: '60%', left: '25%' }, 
-        mobilePos: { top: '80%', left: '50%' }
+        mobilePos: { top: '80%', left: '50%' },
+        color: '#000000' // Black
     },
     { 
         id: 6, name: 'Rolin', role: 'Medic', weapons: '', gadgets:'', element:'Time' , image:'Rayyan.png' ,
         pcPos: { top: '70%', left: '15%' }, 
-        mobilePos: { top: '80%', left: '75%' }
+        mobilePos: { top: '80%', left: '75%' },
+        color: '#800080' // Purple
     },
     { 
         id: 7, name: 'Shah', role: 'Navigator', weapons: 'Sword', gadgets: 'Lava Shield', element: 'Fire', image: 'Shaadh.png',
         pcPos: { top: '70%', left: '90%' }, 
-        mobilePos: { top: '75%', left: '90%' }
+        mobilePos: { top: '75%', left: '90%' },
+        color: '#ff0000' // Red
     }
 ];
 
@@ -200,10 +207,14 @@
                 charEl.style.top = pos.top;
                 charEl.style.left = pos.left;
                 
-                charEl.innerHTML = `
-                    <img src="images/${char.image}" class="character-sprite" onerror="this.src='images/fallback.png'">
-                    <br><div class="character-name">${char.name}</div>
-                `;
+                // Replace this part inside your characters.forEach loop:
+            charEl.innerHTML = `
+                <img src="images/${char.image}" 
+                    class="character-sprite" 
+                    style="filter: drop-shadow(0 0 10px ${char.color})" 
+                    onerror="this.src='images/fallback.png'">
+                <br><div class="character-name" style="border-color: ${char.color}; color: ${char.color}">${char.name}</div>
+            `;
 
                 charEl.onpointerdown = (e) => {
                     e.stopPropagation();
@@ -234,6 +245,3 @@ window.addEventListener('resize', initCharacters);
     </script>
 </body>
 </html>
-
-
-
